@@ -144,3 +144,22 @@ def test_lora_only_trains_adapters():
     model = get_peft_model(tiny_model(), LoraConfig(r=4, lora_alpha=8, target_modules="all-linear"))
     trainable = [n for n, p in model.named_parameters() if p.requires_grad]
     assert trainable and all("lora_" in n for n in trainable)
+
+
+def test_load_examples_masks_prompt_and_drops_long_rows(tmp_path):
+    from hijack_proof.chat import ChatEncoder
+    from hijack_proof.train.run_sft import load_examples
+    from tests.test_eval_harness import FakeTokenizer
+
+    rows = [
+        {"instruction": "Who sent it?", "data": "From: Ana", "response": "Ana"},
+        {"instruction": "Who?", "data": " ".join(["word"] * 400), "response": "x"},
+    ]
+    path = tmp_path / "sft.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    examples, info = load_examples(path, ChatEncoder(FakeTokenizer()), max_len=200)
+    assert info["rows"] == 2 and info["kept"] == 1 and info["dropped_too_long"] == 1
+    ids, labels = examples[0]
+    assert len(ids) == len(labels) and labels[-1] == ids[-1]
+    n_target = sum(t != IGNORE_INDEX for t in labels)
+    assert n_target == info["target_tokens"] == 2  # the response token and the end-of-turn token

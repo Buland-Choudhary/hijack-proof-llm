@@ -453,8 +453,8 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 
 **M3: Secure format and SFT**
 - [x] SFT trainer core: response-only loss, length-bucketed batches (instead of packing, no attention leakage), grad accumulation, cosine schedule, bf16 autocast, atomic checkpoints with exact resume, clean pause (tested)
-- [ ] SFT command-line runner (LoRA / full fine-tune), post-hoc dev evaluation hook, run logging (metrics.jsonl; MLflow optional)
-- [ ] Training-data builder: TaskForge train split (clean + train-only attacks) + general instructions; verified self-generated targets with templated fallback
+- [x] SFT command-line runner `hp-sft` (LoRA / full fine-tune, resumable), run logging to metrics.jsonl (MLflow still optional)
+- [x] Training-data builder `hp-sftdata`: TaskForge train split (clean + train-only attacks) + general instructions; verified self-generated targets with reference-answer fallback (code and tests done; generation per model still to run)
 - [ ] Train/eval 8-gram overlap report committed
 - [ ] Over-defense suite (harmless imperative documents; "what does this document ask me to do?" questions), frozen as an addition to eval v2
 - [ ] Runs: 360M full fine-tune, 360M LoRA, 0.6B LoRA; ablations (input role vs inline, mix ratio)

@@ -2,7 +2,7 @@
 
 ## Current status
 - **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
-- **Milestone:** M2 (benchmark and baselines), in progress. M0 and M1 done.
+- **Milestone:** M2 (benchmark and baselines), in progress; M3 code (SFT trainer, data builder, runner) written ahead while the CPU runs the dev sweep. M0 and M1 done.
 - **Next up (in order):** dev sweep (via `hp-queue`), core baselines, detector run, baseline table +
   README findings.
 - **Blockers:** none.
@@ -77,3 +77,9 @@
   `src/hijack_proof/eval/ifeval/NOTICE.md`), 541 prompts, max 320 new tokens, strict/loose prompt- and
   instruction-level accuracy with bootstrap CIs. NLTK's own downloader refuses to run through the sandbox
   proxy (SSRF protection), so the punkt_tab data is fetched directly into `data/raw/nltk_data`.
+- Dev sweep running via `scripts/run_queue_until_done.sh scripts/queues/dev_sweep.txt` (12 jobs, 25-minute
+  resumable chunks, log in runs/queue/dev_sweep_2.log). First dev results (SmolLM2-360M, no defense):
+  clean acc 0.533, loose ASR 0.377; sandwich: clean acc 0.533, loose ASR 0.330.
+- M3 code written while waiting: from-scratch SFT trainer (`train/sft.py`, tests incl. exact resume),
+  `hp-sft` runner, SFT data builder `hp-sftdata`. Not yet run on real data (needs the CPU).
+- Lesson: a `pkill -f` pattern that matches its own command line kills the shell that runs it.
