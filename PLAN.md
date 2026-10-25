@@ -443,7 +443,7 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] Reset-proof evaluation: per-item outputs saved as they go, automatic resume; sequential job queue (`hp-queue`)
 - [x] Eval v2: dev rebuilt from seen families + train phrasings; core byte-identical to v1 (tested)
 - [x] SecAlign-style injection suite on held-out Alpaca-cleaned prompts (D15), frozen in eval v2
-- [ ] IFEval adapter (official checker logic, general-usefulness metric)
+- [x] IFEval adapter (`hp-ifeval`, vendored official checkers, general-usefulness metric)
 - [ ] Dev sweep: 5 prompting setups + zero-shot `input` role for 360M and 0.6B; choose best defense per model
 - [ ] Core baselines: none + chosen defense (135M, 360M, 0.6B); none for Qwen3-1.7B and 4B
 - [ ] Detector baseline run (train split → core)

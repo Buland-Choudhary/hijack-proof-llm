@@ -78,11 +78,14 @@ def load_rows(path: Path) -> dict[str, dict]:
     return rows
 
 
-def evaluate_resumable(
-    items: list[dict], generator, encoder: ChatEncoder, defense: str, max_new_tokens: int,
-    rows_path: Path, chunk_size: int = 64, deadline: float | None = None, log=print,
+def run_chunks(
+    items: list[dict], make_rows, rows_path: Path, chunk_size: int = 64,
+    deadline: float | None = None, log=print,
 ) -> tuple[list[dict], bool]:  # fmt: skip
-    """Evaluate in chunks, appending rows to `rows_path`. Returns (rows in item order, finished)."""
+    """Process `items` in chunks, appending each chunk's rows (dicts with an "id") to `rows_path`.
+
+    Finished items are skipped on re-run. Returns (rows in item order, finished).
+    """
     done = load_rows(rows_path)
     todo = [i for i in items if i["id"] not in done]
     if done:
@@ -92,8 +95,7 @@ def evaluate_resumable(
         # always finish at least one chunk per call, otherwise a short budget could never progress
         if start > 0 and deadline is not None and time.time() >= deadline:
             break
-        chunk = todo[start : start + chunk_size]
-        new_rows = evaluate(chunk, generator, encoder, defense, max_new_tokens)
+        new_rows = make_rows(todo[start : start + chunk_size])
         with rows_path.open("a") as f:
             for row in new_rows:
                 f.write(json.dumps(row, ensure_ascii=False) + "\n")
@@ -103,6 +105,17 @@ def evaluate_resumable(
         log(f"  {len(done)}/{len(items)} items")
     ordered = [done[i["id"]] for i in items if i["id"] in done]
     return ordered, len(ordered) == len(items)
+
+
+def evaluate_resumable(
+    items: list[dict], generator, encoder: ChatEncoder, defense: str, max_new_tokens: int,
+    rows_path: Path, chunk_size: int = 64, deadline: float | None = None, log=print,
+) -> tuple[list[dict], bool]:  # fmt: skip
+    """Evaluate in chunks, appending rows to `rows_path`. Returns (rows in item order, finished)."""
+    return run_chunks(
+        items, lambda chunk: evaluate(chunk, generator, encoder, defense, max_new_tokens),
+        rows_path, chunk_size, deadline, log,
+    )  # fmt: skip
 
 
 def main(argv: list[str] | None = None) -> int:

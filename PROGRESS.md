@@ -3,8 +3,8 @@
 ## Current status
 - **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
 - **Milestone:** M2 (benchmark and baselines), in progress. M0 and M1 done.
-- **Next up (in order):** SecAlign-protocol and IFEval adapters, dev sweep (queue), core baselines,
-  detector run, baseline table + README findings.
+- **Next up (in order):** dev sweep (via `hp-queue`), core baselines, detector run, baseline table +
+  README findings.
 - **Blockers:** none.
 
 ## Session log
@@ -71,3 +71,9 @@
 - Eval v2 frozen in `evalsets/v2/`: dev now uses seen families and train phrasings only; core is
   byte-identical to v1 (tested), so the SmolLM2-135M core result stays valid. `evalsets/v1/` is kept
   for history.
+- External evals: SecAlign-style injection suite (208 held-out Alpaca-cleaned prompts x 4 attack types,
+  ASR only; frozen in `evalsets/v2/secalign.jsonl`; deviation recorded as D15 because the AlpacaFarm
+  prompts are only on Hugging Face). IFEval via `hp-ifeval`: official Google checkers vendored (Apache-2.0,
+  `src/hijack_proof/eval/ifeval/NOTICE.md`), 541 prompts, max 320 new tokens, strict/loose prompt- and
+  instruction-level accuracy with bootstrap CIs. NLTK's own downloader refuses to run through the sandbox
+  proxy (SSRF protection), so the punkt_tab data is fetched directly into `data/raw/nltk_data`.

@@ -51,3 +51,14 @@ def test_blocks_large_files(tmp_path):
 
 def test_blocks_env_files():
     assert safety.check_file("configs/.env")
+
+
+def test_vendored_benchmark_data_skips_personal_patterns_but_not_secrets(tmp_path, monkeypatch):
+    path = "src/hijack_proof/eval/ifeval/input_data.jsonl"
+    f = tmp_path / "input_data.jsonl"
+    monkeypatch.setattr(safety, "PERSONAL_DATA_OK", {str(f)})
+    f.write_text("Call me at 631-481" + "-4867")
+    assert safety.check_file(str(f)) == []
+    f.write_text("token = ghp_" + "a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8")
+    assert safety.check_file(str(f))
+    assert path in safety.PERSONAL_DATA_OK

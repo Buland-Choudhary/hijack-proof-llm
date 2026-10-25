@@ -55,6 +55,11 @@ BLOCKED_NAMES = re.compile(r"(^|/)(\.env(\..*)?|id_rsa|id_ed25519|credentials\.j
 # Directories whose files must never be git-ignored.
 SOURCE_DIRS = ["src", "tests", "scripts", "configs", "docs", "evalsets", "results"]
 
+# Vendored public benchmark data that legitimately contains fake phone numbers or emails
+# (e.g. IFEval prompt 3198 ends with a fixed example phone number). Only the personal-data
+# patterns are skipped for these files; the secret patterns still apply.
+PERSONAL_DATA_OK = {"src/hijack_proof/eval/ifeval/input_data.jsonl"}
+
 # Files allowed to contain the patterns above (the checker and its own tests).
 ALLOWLIST = {"scripts/check_repo_safety.py", "tests/test_repo_safety.py"}
 
@@ -93,7 +98,8 @@ def check_file(path: str) -> list[str]:
         text = p.read_text(encoding="utf-8")
     except UnicodeDecodeError:
         return problems  # binary files are covered by the size limit and .gitignore
-    for name, pattern in SECRET_PATTERNS + PERSONAL_PATTERNS:
+    patterns = SECRET_PATTERNS + ([] if path in PERSONAL_DATA_OK else PERSONAL_PATTERNS)
+    for name, pattern in patterns:
         for match in pattern.finditer(text):
             line_no = text.count("\n", 0, match.start()) + 1
             problems.append(f"{path}:{line_no}: possible {name}")
