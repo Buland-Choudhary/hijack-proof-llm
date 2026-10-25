@@ -97,3 +97,13 @@
 - Incidents: llama-server OOM-killed by its default 8 GB prompt cache (fixed with --cache-ram 512), one
   cold-disk server start timeout (limit raised to 900 s), 2-hour limit on a background wrapper
   (resumed). All runs resumed without losing items.
+
+### 2026-10-25, first SFT run (attempt 1) and diagnosis
+- Attempt 1: SmolLM2-360M, LoRA r=32, lr 2e-4, 2 epochs, input role, all 2,742 rows (54% verified self
+  answers, 46% short reference answers for TaskForge). Dev result: loose ASR 37.7% -> 0.3%, attacked-task
+  accuracy 22.7% -> 42.0%, BUT clean accuracy 53.3% -> 42.7% (gate: <=3 points) and over-defense accuracy
+  89.0% -> 80.5%. Fails the usefulness gate; ASR gate passed by a wide margin.
+- Diagnosis (dev, per question type): the model now answers in bare words ("No", "4") and loses its
+  sentence-style reasoning; yes/no and counting questions regress most (yesno_compare 11 -> 3 of 13).
+  Cause: the reference-answer fallback (bare gold answers) differs in style from the model's own answers.
+- Attempt 2 (planned, tuned on dev only): train on verified self answers only (`--target-source self`).
