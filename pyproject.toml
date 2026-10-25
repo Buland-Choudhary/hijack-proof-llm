@@ -34,6 +34,7 @@ hp-fetch = "hijack_proof.models.fetch:main"
 hp-eval = "hijack_proof.eval.run:main"
 hp-queue = "hijack_proof.queue:main"
 hp-ifeval = "hijack_proof.eval.ifeval_run:main"
+hp-report = "hijack_proof.eval.report:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hijack_proof"]

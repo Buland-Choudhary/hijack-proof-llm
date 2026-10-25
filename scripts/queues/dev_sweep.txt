@@ -1,0 +1,13 @@
+# Dev sweep (D8): choose the best prompting defense per model on the dev suite. Resumable via hp-queue.
+hp-eval --model smollm2-360m --suite dev --defense none --format user_inline
+hp-eval --model smollm2-360m --suite dev --defense sandwich --format user_inline
+hp-eval --model smollm2-360m --suite dev --defense warning --format user_inline
+hp-eval --model smollm2-360m --suite dev --defense delimiters --format user_inline
+hp-eval --model smollm2-360m --suite dev --defense spotlight --format user_inline
+hp-eval --model smollm2-360m --suite dev --defense none --format input_role
+hp-eval --model qwen3-0.6b --suite dev --defense none --format user_inline
+hp-eval --model qwen3-0.6b --suite dev --defense sandwich --format user_inline
+hp-eval --model qwen3-0.6b --suite dev --defense warning --format user_inline
+hp-eval --model qwen3-0.6b --suite dev --defense delimiters --format user_inline
+hp-eval --model qwen3-0.6b --suite dev --defense spotlight --format user_inline
+hp-eval --model qwen3-0.6b --suite dev --defense none --format input_role
