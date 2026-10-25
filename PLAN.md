@@ -364,7 +364,7 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 
 **M2: Benchmark and baselines** (first portfolio-worthy result: "how hijackable are small LLMs?")
 - [x] TaskForge generator and checkers (≥10 document types, ≥15 question types), seeded
-- [ ] Attack library (≥13 families, train/held-out split) and success checkers
+- [x] Attack library (12 families incl. multi-injection, train/held-out split) and success checkers
 - [ ] External eval adapters: AlpacaFarm-injection (SecAlign protocol), BIPIA subset, Tensor Trust, IFEval
 - [ ] Eval harness CLI (`hp-eval --model … --suite core`): batched, cached, writes JSON + markdown tables
 - [ ] Freeze eval sets (`evalsets/v1`, sha256 manifest); separate dev split

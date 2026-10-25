@@ -2,7 +2,7 @@
 
 ## Current status
 - **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 done (llama.cpp built; GGUF conversion and CPU throughput benchmark in results/bench).
-- **Next up:** attack library (families, payloads, success checkers), then the eval harness and baselines.
+- **Next up:** eval harness (batched generation, caching, tables), then freeze eval sets and run baselines.
 - **Blockers:** none.
 
 ## Session log
@@ -32,3 +32,8 @@
   Single-stream CPU generation (4 threads): 0.6B Q8_0 56 tok/s, 0.6B Q4_K_M 40, 1.7B Q8_0 22, 4B Q8_0 9.6
   (`results/bench/llama_cpp_cpu_throughput.md`). Cloud disk allowance is tight (~39 GB): the 1.7B and 4B
   safetensors were deleted after conversion (re-fetch with `hp-fetch` if needed; GGUFs are kept).
+- M2: attack library done: 11 single families + multi-injection (4 families held out: authority,
+  multilingual, formatting, obfuscation), 5 harmless payload kinds (canary, wrong answer, link on
+  example.com, refuse, answer in French), train vs eval phrasings, 3 positions. Loose and strict
+  (response-starts-with) attack-success checks. Tests: clean oracle answers never trigger a false
+  attack hit; role-spoofing cannot create real role markers after sanitization.
