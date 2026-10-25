@@ -181,3 +181,34 @@ def test_target_source_filter_keeps_only_self_answers(tmp_path):
     assert load_examples(path, enc, 200)[1]["kept"] == 3
     assert load_examples(path, enc, 200, "self")[1]["kept"] == 2
     assert load_examples(path, enc, 200, "reference")[1]["kept"] == 1
+
+
+def test_memory_guard_pauses_and_resumes_to_the_same_weights(tmp_path):
+    data = copy_task(24)
+    base = dict(
+        lr=1e-3,
+        epochs=2,
+        max_tokens_per_batch=64,
+        batches_per_step=1,
+        warmup_steps=1,
+        log_every=1000,
+    )
+    full = tiny_model()
+    sft.train(full, data, sft.SFTConfig(**base), tmp_path / "full", pad_id=0, log=lambda m: None)
+
+    guarded = tiny_model()
+    cfg = sft.SFTConfig(**base, max_rss_gb=1e-6)  # always over the limit: one step per call
+    calls = 0
+    while True:
+        calls += 1
+        status = sft.train(guarded, data, cfg, tmp_path / "guard", pad_id=0, log=lambda m: None)
+        if status == "done":
+            break
+        assert calls < 200
+    assert calls > 3
+    for (n, a), (_, b) in zip(full.named_parameters(), guarded.named_parameters(), strict=True):
+        assert torch.allclose(a, b, atol=1e-6), n
+
+
+def test_rss_is_reported():
+    assert 0.01 < sft.rss_gb() < 64

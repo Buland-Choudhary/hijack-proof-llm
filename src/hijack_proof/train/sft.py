@@ -14,6 +14,9 @@ Design choices (plan §8, Stage 1):
 
 from __future__ import annotations
 
+import contextlib
+import ctypes
+import gc
 import json
 import math
 import os
@@ -42,6 +45,7 @@ class SFTConfig:
     seed: int = 0
     ckpt_minutes: float = 15.0
     log_every: int = 5
+    max_rss_gb: float = 11.0  # checkpoint and pause (restartable) if the process grows past this
 
 
 Example = tuple[list[int], list[int]]  # (input_ids, labels)
@@ -118,6 +122,24 @@ def token_loss_sum(logits: torch.Tensor, labels: torch.Tensor) -> tuple[torch.Te
     return loss, int((shift_labels != IGNORE_INDEX).sum())
 
 
+def rss_gb() -> float:
+    """Resident memory of this process in GB (Linux)."""
+    with open("/proc/self/status") as f:
+        for line in f:
+            if line.startswith("VmRSS:"):
+                return int(line.split()[1]) / 1e6
+    return 0.0
+
+
+def release_memory() -> None:
+    """Hand freed heap memory back to the OS. glibc fragments badly under the varying tensor
+    shapes of variable-length batches, which otherwise lets RSS creep until the container's
+    memory limit kills the process."""
+    gc.collect()
+    with contextlib.suppress(OSError):
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+
+
 def save_checkpoint(path: Path, model, opt, step: int) -> None:
     trainable = {n: p.detach().cpu() for n, p in model.named_parameters() if p.requires_grad}
     tmp = path.with_suffix(".tmp")
@@ -155,8 +177,17 @@ def train(
     model.train()
     last_ckpt, t0 = time.time(), time.time()
     status = "done"
+    steps_this_call = 0
     while step < len(steps):
-        if deadline is not None and time.time() >= deadline and step > 0:
+        # always do at least one step per call, otherwise a restart could never make progress
+        if deadline is not None and time.time() >= deadline and steps_this_call > 0:
+            status = "paused"
+            break
+        if steps_this_call > 0 and rss_gb() > cfg.max_rss_gb:
+            log(
+                f"memory guard: RSS {rss_gb():.1f} GB > {cfg.max_rss_gb} GB; "
+                "checkpointing for a clean restart"
+            )
             status = "paused"
             break
         for group in opt.param_groups:
@@ -179,6 +210,8 @@ def train(
         opt.step()
         opt.zero_grad(set_to_none=True)
         step += 1
+        steps_this_call += 1
+        release_memory()
         row = {
             "step": step,
             "loss": total_loss / max(1, n_target),
