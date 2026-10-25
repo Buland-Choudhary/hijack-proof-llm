@@ -1,0 +1,10 @@
+# Core baselines (plan §7, D8). Defense for 360M and 0.6B = "sandwich", chosen on dev by hp-report.
+# 135M core/none is already in results/core. 4B runs on every 3rd item (450 of 1350) to save CPU time.
+hp-eval --model smollm2-360m --suite core --defense none --format user_inline
+hp-eval --model smollm2-360m --suite core --defense sandwich --format user_inline
+hp-eval --model qwen3-0.6b --suite core --defense none --format user_inline
+hp-eval --model qwen3-0.6b --suite core --defense sandwich --format user_inline
+hp-ifeval --model smollm2-360m
+hp-ifeval --model qwen3-0.6b
+hp-eval --model qwen3-1.7b --gguf models/gguf/qwen3-1.7b-q8_0.gguf --suite core --defense none --format user_inline
+hp-eval --model qwen3-4b-instruct --gguf models/gguf/qwen3-4b-instruct-q8_0.gguf --suite core --defense none --format user_inline --limit 450

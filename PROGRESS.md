@@ -3,8 +3,8 @@
 ## Current status
 - **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
 - **Milestone:** M2 (benchmark and baselines), in progress; M3 code (SFT trainer, data builder, runner) written ahead while the CPU runs the dev sweep. M0 and M1 done.
-- **Next up (in order):** dev sweep (via `hp-queue`), core baselines, detector run, baseline table +
-  README findings.
+- **Next up (in order):** core baselines (`scripts/queues/core_baselines.txt`), detector run, baseline table +
+  README findings, then SFT data generation and training.
 - **Blockers:** none.
 
 ## Session log
@@ -83,3 +83,6 @@
 - M3 code written while waiting: from-scratch SFT trainer (`train/sft.py`, tests incl. exact resume),
   `hp-sft` runner, SFT data builder `hp-sftdata`. Not yet run on real data (needs the CPU).
 - Lesson: a `pkill -f` pattern that matches its own command line kills the shell that runs it.
+- Dev sweep finished (12 jobs). Chosen baseline defense for both SmolLM2-360M and Qwen3-0.6B: sandwich
+  (lowest loose ASR with <=3 points clean-accuracy loss; spotlight blocks more attacks but costs 13-20
+  points of clean accuracy). Tables: `results/baselines/dev_table.md`.
