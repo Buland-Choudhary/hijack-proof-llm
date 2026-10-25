@@ -1,0 +1,7 @@
+# M3 next: final-test evaluation of the chosen SmolLM2-360M recipe, then the same recipe on Qwen3-0.6B.
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self-lr1e4/adapter --suite core --format input_role --tag sft360-final
+hp-ifeval --model smollm2-360m --adapter runs/sft/sft360-lora-self-lr1e4/adapter --tag sft360-final
+hp-eval --model qwen3-0.6b --suite overdefense --defense none --format user_inline
+hp-sft --model qwen3-0.6b --data data/generated/sft_qwen3-0.6b.jsonl --run qwen06-lora-self --format input_role --target-source self --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 1024 --batches-per-step 8 --warmup-steps 8
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-self/adapter --suite dev --format input_role --tag qwen06-lora-self
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-self/adapter --suite overdefense --format input_role --tag qwen06-lora-self

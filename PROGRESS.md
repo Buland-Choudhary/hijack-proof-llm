@@ -112,3 +112,8 @@
   attempt 1 was 80 -> 64, p=0.04); over-defense accuracy 89.0% -> 87.5%. Misses the 3-point gate by 1 point.
 - Attempt 3 (queued): same as attempt 2 with lr 1e-4. The trainer also got a memory guard after RSS crept to
   14 GB and the OOM killer ended attempt 2 at step 49 (resumed from its step-36 checkpoint).
+- Attempt 3 (verified self answers only, lr 1e-4): dev loose ASR 37.7% -> 4.3% (13/300 obeyed), clean accuracy
+  53.3% -> 50.7% (76 vs 80 of 150, McNemar p=0.42), over-defense 89.0% -> 88.0%. Meets both gates (>=50%
+  relative ASR drop, <=3 points clean loss), so it is the chosen SmolLM2-360M recipe: LoRA r=32, lr 1e-4,
+  2 epochs, verified self answers only, input role. Next: one core evaluation + IFEval of this adapter
+  (tag sft360-final), then the same recipe on Qwen3-0.6B (micro-batch 1024 tokens because of its large vocabulary).

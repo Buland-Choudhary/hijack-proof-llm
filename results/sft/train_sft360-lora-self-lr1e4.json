@@ -1,0 +1,33 @@
+{
+  "run": "sft360-lora-self-lr1e4",
+  "base": "smollm2-360m",
+  "format": "input_role",
+  "lora_r": 32,
+  "config": {
+    "lr": 0.0001,
+    "epochs": 2.0,
+    "max_tokens_per_batch": 2048,
+    "batches_per_step": 4,
+    "warmup_steps": 8,
+    "weight_decay": 0.0,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "seed": 0,
+    "ckpt_minutes": 15.0,
+    "log_every": 5,
+    "max_rss_gb": 11.0
+  },
+  "data": {
+    "rows": 1546,
+    "kept": 1546,
+    "dropped_too_long": 0,
+    "tokens": 240595,
+    "target_tokens": 53762,
+    "data_sha256": "29d7c14fed3769d2b8160f9e25247774160823a318361ee409599fa9df1ac482",
+    "target_source": "self"
+  },
+  "steps": 68,
+  "first_loss": 0.3708502841573979,
+  "final_loss": 0.3045813633124424,
+  "train_seconds": 140.0
+}
