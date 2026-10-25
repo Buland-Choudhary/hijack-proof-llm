@@ -1,0 +1,4 @@
+# SFT attempt 2: same as attempt 1 but trained only on the model's own verified answers (no reference fallback).
+hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl --run sft360-lora-self --format input_role --target-source self --lora-r 32 --lr 2e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self/adapter --suite dev --format input_role --tag sft360-lora-self
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self/adapter --suite overdefense --format input_role --tag sft360-lora-self

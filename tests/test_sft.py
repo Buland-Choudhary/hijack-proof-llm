@@ -163,3 +163,21 @@ def test_load_examples_masks_prompt_and_drops_long_rows(tmp_path):
     assert len(ids) == len(labels) and labels[-1] == ids[-1]
     n_target = sum(t != IGNORE_INDEX for t in labels)
     assert n_target == info["target_tokens"] == 2  # the response token and the end-of-turn token
+
+
+def test_target_source_filter_keeps_only_self_answers(tmp_path):
+    from hijack_proof.chat import ChatEncoder
+    from hijack_proof.train.run_sft import load_examples
+    from tests.test_eval_harness import FakeTokenizer
+
+    rows = [
+        {"instruction": "q1", "data": "d", "response": "a", "target_source": "self"},
+        {"instruction": "q2", "data": "d", "response": "b", "target_source": "reference"},
+        {"instruction": "q3", "data": None, "response": "c", "target_source": "self"},
+    ]
+    path = tmp_path / "sft.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    enc = ChatEncoder(FakeTokenizer())
+    assert load_examples(path, enc, 200)[1]["kept"] == 3
+    assert load_examples(path, enc, 200, "self")[1]["kept"] == 2
+    assert load_examples(path, enc, 200, "reference")[1]["kept"] == 1

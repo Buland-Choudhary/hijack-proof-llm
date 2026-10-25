@@ -27,8 +27,12 @@ from hijack_proof.train import sft
 PAUSED = sft.PAUSED
 
 
-def load_examples(path: Path, enc: ChatEncoder, max_len: int) -> tuple[list, dict]:
+def load_examples(
+    path: Path, enc: ChatEncoder, max_len: int, target_source: str = "all"
+) -> tuple[list, dict]:
     rows = [json.loads(line) for line in path.read_text().splitlines()]
+    if target_source != "all":  # e.g. "self": keep only the model's own verified answers
+        rows = [r for r in rows if r.get("target_source") == target_source]
     examples, dropped = [], 0
     for r in rows:
         ids, labels = enc.encode(Prompt(r["instruction"], r["data"]), r["response"])
@@ -62,6 +66,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--ckpt-minutes", type=float, default=15.0)
     ap.add_argument("--max-minutes", type=float)
     ap.add_argument("--limit", type=int, help="use only the first N training rows (smoke tests)")
+    ap.add_argument(
+        "--target-source",
+        default="all",
+        choices=["all", "self", "reference"],
+        help="train only on rows whose target came from this source",
+    )
     args = ap.parse_args(argv)
 
     out_dir = Path("runs/sft") / args.run
@@ -83,7 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         out_dir.mkdir(parents=True, exist_ok=True)
         limited.write_text("".join(args.data.read_text().splitlines(keepends=True)[: args.limit]))
         args.data = limited
-    examples, info = load_examples(args.data, enc, args.max_len)
+    examples, info = load_examples(args.data, enc, args.max_len, args.target_source)
+    info["target_source"] = args.target_source
     print(f"data: {info}", flush=True)
 
     torch.manual_seed(args.seed)
