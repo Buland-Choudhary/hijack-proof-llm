@@ -42,6 +42,8 @@
   - in the cloud, keep jobs in chunks of <=30 minutes and check in at least every ~10 minutes
   - multi-hour unattended runs belong on the owner's own machine (same code, same commands)
   - after any restart, run `uptime` and check `runs/` before assuming a job is still alive
+  - never use `pkill -f` / `pgrep -f` with text that also appears in your own command (it matches
+    and kills the shell running it); use `pgrep -x <name>` and kill by PID
 - Keep disk use in check: delete old checkpoints, keep the best and the last.
 
 ## Where things go
