@@ -44,6 +44,13 @@
         "combined"
       ],
       "seed": 3003
+    },
+    "overdefense": {
+      "sha256": "d59e181ee5bcb4897128a97f89594bf295d05ac3a98ee39292870775bb03a908",
+      "items": 200,
+      "generator": "hijack_proof.data.overdefense",
+      "seed": 4004,
+      "n": 200
     }
   }
 }

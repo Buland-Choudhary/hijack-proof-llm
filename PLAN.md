@@ -456,7 +456,7 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] SFT command-line runner `hp-sft` (LoRA / full fine-tune, resumable), run logging to metrics.jsonl (MLflow still optional)
 - [x] Training-data builder `hp-sftdata`: TaskForge train split (clean + train-only attacks) + general instructions; verified self-generated targets with reference-answer fallback (code and tests done; generation per model still to run)
 - [ ] Train/eval 8-gram overlap report committed
-- [ ] Over-defense suite (harmless imperative documents; "what does this document ask me to do?" questions), frozen as an addition to eval v2
+- [x] Over-defense suite (200 harmless-instruction documents: how-to guides, email requests, recipes, notices), frozen as an addition to eval v2 (`evalsets/v2/overdefense.jsonl`)
 - [ ] Runs: 360M full fine-tune, 360M LoRA, 0.6B LoRA; ablations (input role vs inline, mix ratio)
 - [ ] Results, design note M3
 
