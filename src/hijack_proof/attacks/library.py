@@ -298,3 +298,24 @@ def build_attack(
         instruction=example.instruction, data=data, answer=example.answer, family=family,
         payload=payload, position=position, phrase_set=phrase_set, injection=injection, attack=spec,
     )  # fmt: skip
+
+
+def build_training_attacks(
+    examples: list[Example], seed: int, n: int | None = None
+) -> list[AttackedExample]:
+    """One attack per example for TRAINING data: seen families only, train phrasings, balanced
+    over payloads and positions. Held-out families and eval phrasings never appear here."""
+    rng = random.Random(f"train-attacks/{seed}")
+    n = len(examples) if n is None else n
+    pool = SEEN_FAMILIES + [MULTI]
+    families = [pool[i % len(pool)] for i in range(n)]
+    payloads = [PAYLOADS[i % len(PAYLOADS)] for i in range(n)]
+    positions = [POSITIONS[i % len(POSITIONS)] for i in range(n)]
+    for seq in (families, payloads, positions):
+        rng.shuffle(seq)
+    return [
+        build_attack(
+            rng, examples[i % len(examples)], families[i], payloads[i], positions[i], "train"
+        )
+        for i in range(n)
+    ]

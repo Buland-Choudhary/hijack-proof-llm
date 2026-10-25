@@ -43,3 +43,9 @@
   each clean + 2 attacked = 1350 items from held-out templates; dev: 450 items), sha256 manifest,
   regeneration test fails if generators change (bump versions instead). Smoke run on SmolLM2-135M works
   (60-item sample: not a result, only a pipeline check).
+- M2: llama.cpp backend (`hp-eval --gguf`) for the 1.7B/4B baselines; detector baseline code
+  (SmolLM2-135M sequence classifier trained on TaskForge train docs with train-only attacks; reports
+  detection rate by family and false-alarm rate) with tests. `build_training_attacks` is the shared
+  builder for training data (seen families + train phrasings only).
+- Running in background: baseline matrix (`scripts/run_baselines.sh`, log in runs/baselines/matrix.log).
+  Slow while other CPU work competes; avoid heavy jobs until it finishes. Detector training waits for it.
