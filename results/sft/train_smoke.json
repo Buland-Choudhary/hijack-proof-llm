@@ -1,0 +1,31 @@
+{
+  "run": "smoke",
+  "base": "smollm2-360m",
+  "format": "input_role",
+  "lora_r": 16,
+  "config": {
+    "lr": 0.0002,
+    "epochs": 1.0,
+    "max_tokens_per_batch": 2048,
+    "batches_per_step": 2,
+    "warmup_steps": 2,
+    "weight_decay": 0.0,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "seed": 0,
+    "ckpt_minutes": 15.0,
+    "log_every": 5
+  },
+  "data": {
+    "rows": 48,
+    "kept": 48,
+    "dropped_too_long": 0,
+    "tokens": 8242,
+    "target_tokens": 960,
+    "data_sha256": "f3c00cd65023ecfdf83238a4bbfe7ee090ced67c48cd3cb98e11a22d049c58d9"
+  },
+  "steps": 3,
+  "first_loss": 0.523679890583471,
+  "final_loss": 0.5073323493456319,
+  "train_seconds": 38.6
+}
