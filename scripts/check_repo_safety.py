@@ -52,6 +52,9 @@ PERSONAL_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 
 BLOCKED_NAMES = re.compile(r"(^|/)(\.env(\..*)?|id_rsa|id_ed25519|credentials\.json)$")
 
+# Directories whose files must never be git-ignored.
+SOURCE_DIRS = ["src", "tests", "scripts", "configs", "docs", "evalsets", "results"]
+
 # Files allowed to contain the patterns above (the checker and its own tests).
 ALLOWLIST = {"scripts/check_repo_safety.py", "tests/test_repo_safety.py"}
 
@@ -97,6 +100,17 @@ def check_file(path: str) -> list[str]:
     return problems
 
 
+def ignored_source_files() -> list[str]:
+    """Source files that .gitignore silently hides (they would never reach GitHub)."""
+    out = subprocess.run(
+        ["git", "ls-files", "--others", "--ignored", "--exclude-standard", "--", *SOURCE_DIRS],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    return [f for f in out.splitlines() if f and "__pycache__" not in f and not f.endswith(".pyc")]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("files", nargs="*")
@@ -105,6 +119,8 @@ def main(argv: list[str] | None = None) -> int:
 
     files = args.files or (tracked_files() if args.all else staged_files())
     problems = [problem for f in files for problem in check_file(f)]
+    if not args.files:
+        problems += [f"{f}: source file is hidden by .gitignore" for f in ignored_source_files()]
     if problems:
         print("Repo safety check FAILED. Nothing was committed:", file=sys.stderr)
         for problem in problems:
