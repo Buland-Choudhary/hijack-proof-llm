@@ -1,8 +1,8 @@
 # Progress log
 
 ## Current status
-- **Milestone:** M0 (bootstrap). Plan v1 written, waiting for owner approval.
-- **Next up:** after approval, finish M0 (pyproject, safety hook, CI), then M1 (model fetcher).
+- **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 mostly done (llama.cpp build and bigger-model downloads were still running).
+- **Next up:** attack library (families, payloads, success checkers), then the eval harness and baselines.
 - **Blockers:** none.
 
 ## Session log
@@ -20,3 +20,11 @@
 - Checked that these data sources are reachable: Alpaca-cleaned, AlpacaFarm eval outputs, IFEval,
   BIPIA, Tensor Trust, InjecAgent, AgentDojo, SecAlign repo, llama.cpp.
 - Wrote PLAN.md, CLAUDE.md, README skeleton, .gitignore, LICENSE.
+
+### 2026-10-25, cloud session 1 (after plan approval)
+- M0 done: packaging (src layout, uv lock), safety pre-commit hook + CI, tests, ruff.
+- M1: `hp-fetch` downloads SmolLM2 135M/360M and Qwen3 0.6B/1.7B/4B from Docker Hub with sha256 checks.
+  Generation smoke tests pass for the three small models. `ChatEncoder` (secure `input` role, special-token
+  sanitization) matches the official chat templates. Fixed a .gitignore bug that hid `src/hijack_proof/models/`.
+- M2 so far: deterministic answer/attack checkers; TaskForge generator (12 document types, 18 question
+  types, splits by template, 2 doc types held out entirely). Oracle answers score 1.0 in tests.
