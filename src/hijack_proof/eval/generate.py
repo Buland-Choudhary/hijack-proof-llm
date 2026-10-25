@@ -76,6 +76,7 @@ class LlamaCppGenerator:
         ctx: int = 4096,
         port: int = 8089,
         threads: int = 4,
+        startup_seconds: int = 900,
         server_bin: str | Path = "third_party/llama.cpp/build/bin/llama-server",
     ):
         import os
@@ -93,7 +94,7 @@ class LlamaCppGenerator:
              "-t", str(threads), "--port", str(port), "--host", "127.0.0.1", "--no-webui"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
         )  # fmt: skip
-        for _ in range(240):
+        for _ in range(startup_seconds):
             if self.proc.poll() is not None:
                 raise RuntimeError("llama-server exited during startup")
             try:
@@ -103,7 +104,7 @@ class LlamaCppGenerator:
                 pass
             time.sleep(1)
         self.close()
-        raise RuntimeError("llama-server did not become ready in 240s")
+        raise RuntimeError(f"llama-server did not become ready in {startup_seconds}s")
 
     def close(self) -> None:
         if self.proc.poll() is None:
