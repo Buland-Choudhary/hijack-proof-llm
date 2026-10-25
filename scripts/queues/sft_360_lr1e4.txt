@@ -1,0 +1,4 @@
+# SFT attempt 3: as attempt 2 (verified self answers only) but with a lower learning rate (1e-4) to limit drift.
+hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl --run sft360-lora-self-lr1e4 --format input_role --target-source self --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self-lr1e4/adapter --suite dev --format input_role --tag sft360-lora-self-lr1e4
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self-lr1e4/adapter --suite overdefense --format input_role --tag sft360-lora-self-lr1e4

@@ -107,3 +107,8 @@
   sentence-style reasoning; yes/no and counting questions regress most (yesno_compare 11 -> 3 of 13).
   Cause: the reference-answer fallback (bare gold answers) differs in style from the model's own answers.
 - Attempt 2 (planned, tuned on dev only): train on verified self answers only (`--target-source self`).
+- Attempt 2 (verified self answers only, `--target-source self`, same hyperparameters): dev loose ASR
+  37.7% -> 2.3%; clean accuracy 53.3% -> 49.3% (80 -> 74 of 150 correct, McNemar p=0.15, not significant;
+  attempt 1 was 80 -> 64, p=0.04); over-defense accuracy 89.0% -> 87.5%. Misses the 3-point gate by 1 point.
+- Attempt 3 (queued): same as attempt 2 with lr 1e-4. The trainer also got a memory guard after RSS crept to
+  14 GB and the OOM killer ended attempt 2 at step 49 (resumed from its step-36 checkpoint).
