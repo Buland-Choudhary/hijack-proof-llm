@@ -1,0 +1,12 @@
+{
+  "rows": 2742,
+  "by_source_and_target": {
+    "gen_attacked/self": 254,
+    "gen_clean/self": 388,
+    "tf_attacked/reference": 683,
+    "tf_attacked/self": 517,
+    "tf_clean/reference": 513,
+    "tf_clean/self": 387
+  },
+  "attacked_share": 0.5302698760029175
+}
