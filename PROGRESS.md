@@ -1,7 +1,7 @@
 # Progress log
 
 ## Current status
-- **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 mostly done (llama.cpp build and bigger-model downloads were still running).
+- **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 done (llama.cpp built; GGUF conversion and CPU throughput benchmark in results/bench).
 - **Next up:** attack library (families, payloads, success checkers), then the eval harness and baselines.
 - **Blockers:** none.
 
@@ -28,3 +28,7 @@
   sanitization) matches the official chat templates. Fixed a .gitignore bug that hid `src/hijack_proof/models/`.
 - M2 so far: deterministic answer/attack checkers; TaskForge generator (12 document types, 18 question
   types, splits by template, 2 doc types held out entirely). Oracle answers score 1.0 in tests.
+- M1 finished: llama.cpp built; Qwen3 0.6B/1.7B/4B converted to GGUF (Q8_0, 0.6B also Q4_K_M).
+  Single-stream CPU generation (4 threads): 0.6B Q8_0 56 tok/s, 0.6B Q4_K_M 40, 1.7B Q8_0 22, 4B Q8_0 9.6
+  (`results/bench/llama_cpp_cpu_throughput.md`). Cloud disk allowance is tight (~39 GB): the 1.7B and 4B
+  safetensors were deleted after conversion (re-fetch with `hp-fetch` if needed; GGUFs are kept).

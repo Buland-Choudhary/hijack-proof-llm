@@ -347,23 +347,23 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 
 **M0: Bootstrap**
 - [x] PLAN.md, CLAUDE.md, PROGRESS.md, README skeleton, .gitignore, LICENSE
-- [ ] `pyproject.toml` (package `hijack_proof`), uv lock, ruff config
-- [ ] `scripts/check_repo_safety.py` + git pre-commit hook installer + test that it catches a fake secret
-- [ ] CI workflow (lint, tests, safety scan)
+- [x] `pyproject.toml` (package `hijack_proof`), uv lock, ruff config
+- [x] `scripts/check_repo_safety.py` + git pre-commit hook installer + test that it catches a fake secret
+- [x] CI workflow (lint, tests, safety scan)
 
 *Done when:* CI is green and the safety hook blocks a planted fake secret.
 
 **M1: Models and environment**
-- [ ] Model fetcher: Docker Hub OCI (manifest → blobs → sha256 verify → unpack), resumable; HF fallback
-- [ ] Load SmolLM2-135M/360M and Qwen3-0.6B/1.7B/4B; smoke-generation tests
-- [ ] Chat-format utilities with the `input` role and sanitization, plus tests that injected special tokens are neutralized
-- [ ] Build llama.cpp (CPU, AVX-512) for fast evaluation and judging; check GGUF conversion
-- [ ] Throughput benchmarks saved to `results/bench/`
+- [x] Model fetcher: Docker Hub OCI (manifest → blobs → sha256 verify → unpack), resumable; HF fallback
+- [x] Load SmolLM2-135M/360M and Qwen3-0.6B/1.7B/4B; smoke-generation tests
+- [x] Chat-format utilities with the `input` role and sanitization, plus tests that injected special tokens are neutralized
+- [x] Build llama.cpp (CPU, AVX-512) for fast evaluation and judging; check GGUF conversion
+- [x] Throughput benchmarks saved to `results/bench/`
 
 *Done when:* one command fetches and verifies each model, and all tests pass.
 
 **M2: Benchmark and baselines** (first portfolio-worthy result: "how hijackable are small LLMs?")
-- [ ] TaskForge generator and checkers (≥10 document types, ≥15 question types), seeded
+- [x] TaskForge generator and checkers (≥10 document types, ≥15 question types), seeded
 - [ ] Attack library (≥13 families, train/held-out split) and success checkers
 - [ ] External eval adapters: AlpacaFarm-injection (SecAlign protocol), BIPIA subset, Tensor Trust, IFEval
 - [ ] Eval harness CLI (`hp-eval --model … --suite core`): batched, cached, writes JSON + markdown tables
