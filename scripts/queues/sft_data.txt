@@ -1,0 +1,3 @@
+# SFT training data with verified self-generated targets (D11); one file per base model.
+hp-sftdata --model smollm2-360m
+hp-sftdata --model qwen3-0.6b

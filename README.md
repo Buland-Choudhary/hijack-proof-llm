@@ -35,7 +35,7 @@ reproducible with the commands in [`CLAUDE.md`](CLAUDE.md).
   they follow instructions better, including the injected ones.
 - **A prompt-only defense helps a little.** Adding a reminder of the user's task after the
   document ("sandwich") lowers attack success from 45% to 34% on Qwen3-0.6B and from 44% to 36% on
-  SmolLM2-360M, and does not hurt accuracy. It is the best of four prompting defenses on the
+  SmolLM2-360M, and does not hurt accuracy. It was the best trade-off of four prompting defenses on the
   dev set, but about a third of attacks still work.
 - **Every attack style works.** Styles never used in training data (authority impersonation,
   foreign-language wrappers, hidden formatting, obfuscation) work somewhat less than the others
