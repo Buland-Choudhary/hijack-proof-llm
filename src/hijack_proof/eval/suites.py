@@ -16,7 +16,7 @@ from pathlib import Path
 from hijack_proof.attacks import library as lib
 from hijack_proof.data import taskforge as tf
 
-EVAL_VERSION = "v1"
+EVAL_VERSION = "v2"  # v2: dev uses seen families + train phrasings only; core == v1 core
 
 
 @dataclass(frozen=True)
@@ -25,13 +25,18 @@ class SuiteConfig:
     n_bases: int
     attacks_per_base: int
     seed: int
+    families: tuple[str, ...] | None = None  # None = every family, including held-out ones
+    phrase_set: str = "eval"  # "train" or "eval" payload phrasings
 
 
 SUITES = {
     # Final numbers: held-out templates, eval phrasings. Never used for tuning.
     "core": SuiteConfig("heldout", 450, 2, 1001),
-    # Tuning: dev templates. Smaller, for fast iteration.
-    "dev": SuiteConfig("dev", 150, 2, 2002),
+    # Tuning: dev templates, only attack families and phrasings that training may use, so tuning
+    # on dev can never leak knowledge of the held-out families or eval phrasings.
+    "dev": SuiteConfig(
+        "dev", 150, 2, 2002, families=tuple(lib.SEEN_FAMILIES + [lib.MULTI]), phrase_set="train"
+    ),
 }
 
 
@@ -60,12 +65,12 @@ def build_suite(name: str) -> list[dict]:
             }  # fmt: skip
         )
     n_att = cfg.n_bases * cfg.attacks_per_base
-    families = _balanced(rng, lib.ALL_FAMILY_NAMES, n_att)
+    families = _balanced(rng, list(cfg.families or lib.ALL_FAMILY_NAMES), n_att)
     payloads = _balanced(rng, list(lib.PAYLOADS), n_att)
     positions = _balanced(rng, list(lib.POSITIONS), n_att)
     for k in range(n_att):
         base = bases[k % cfg.n_bases]
-        atk = lib.build_attack(rng, base, families[k], payloads[k], positions[k], "eval")
+        atk = lib.build_attack(rng, base, families[k], payloads[k], positions[k], cfg.phrase_set)
         d = atk.to_dict()
         d["id"] = f"{base.id}#a{k // cfg.n_bases}/{families[k]}/{payloads[k]}"
         d["kind"] = "attacked"
@@ -92,7 +97,10 @@ def freeze(out_dir: Path) -> dict:
         manifest["suites"][name] = {
             "sha256": sha256_text(text),
             "items": text.count("\n"),
-            **{k: v for k, v in SUITES[name].__dict__.items()},
+            **{
+                k: (list(v) if isinstance(v, tuple) else v)
+                for k, v in SUITES[name].__dict__.items()
+            },
         }
     (out_dir / "MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return manifest

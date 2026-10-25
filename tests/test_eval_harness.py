@@ -135,3 +135,29 @@ def test_score_item_detects_obeyed_injection():
     )
     row = score_item(item, item["attack"]["any"][0])
     assert row["attack_loose"] and row["attack_strict"] and row["task_score"] == 0.0
+
+
+def test_v2_core_is_byte_identical_to_v1_core():
+    v1 = json.loads(Path("evalsets/v1/MANIFEST.json").read_text())["suites"]["core"]["sha256"]
+    v2 = json.loads(Path("evalsets/v2/MANIFEST.json").read_text())["suites"]["core"]["sha256"]
+    assert v1 == v2
+    assert (
+        Path("evalsets/v1/core.jsonl").read_bytes() == Path("evalsets/v2/core.jsonl").read_bytes()
+    )
+
+
+def test_dev_suite_cannot_leak_heldout_families_or_eval_phrasings():
+    from hijack_proof.attacks import library as lib
+
+    dev = [i for i in suites.load_suite("dev") if i["kind"] == "attacked"]
+    assert dev
+    assert {i["family"] for i in dev} <= set(lib.SEEN_FAMILIES) | {lib.MULTI}
+    assert all(i["phrase_set"] == "train" and i["seen_family"] for i in dev)
+    # no eval-only phrasing text appears in the dev injections
+    eval_only = {
+        p.split("{")[0]
+        for ps in lib.PHRASES.values()
+        for p in ps["eval"]
+        if len(p.split("{")[0]) > 15
+    }
+    assert not any(any(t in i["injection"] for t in eval_only) for i in dev)

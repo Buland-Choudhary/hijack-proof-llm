@@ -3,8 +3,8 @@
 ## Current status
 - **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
 - **Milestone:** M2 (benchmark and baselines), in progress. M0 and M1 done.
-- **Next up (in order):** reset-proof evals + job queue, eval v2 (dev rebuilt), SecAlign-protocol and
-  IFEval adapters, dev sweep, core baselines, detector run, baseline table + README findings.
+- **Next up (in order):** SecAlign-protocol and IFEval adapters, dev sweep (queue), core baselines,
+  detector run, baseline table + README findings.
 - **Blockers:** none.
 
 ## Session log
@@ -61,3 +61,13 @@
   split, per-item resumable evals, job queue with one heavy job at a time, <=30-minute chunks.
 - Found that eval v1 dev contained held-out families and eval phrasings (leak into "unseen attack"
   claims if used for tuning). Fix is eval v2 (core unchanged).
+
+### 2026-10-25, after plan v1.1
+- Plan v1.1 pushed (tiers, pre-registered metrics, execution policy, decisions D6-D14).
+- Reset-proof evals: `hp-eval` appends per-item rows after each chunk, resumes, skips finished runs,
+  pauses with exit code 3 at its time budget (always completing at least one chunk). `hp-queue run
+  <file> --max-minutes N` runs a file of such commands one at a time. Tested with a simulated crash,
+  a half-written line and a time-out pause, plus a real-model pause/resume check.
+- Eval v2 frozen in `evalsets/v2/`: dev now uses seen families and train phrasings only; core is
+  byte-identical to v1 (tested), so the SmolLM2-135M core result stays valid. `evalsets/v1/` is kept
+  for history.

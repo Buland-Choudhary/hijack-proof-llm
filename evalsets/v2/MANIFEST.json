@@ -1,0 +1,35 @@
+{
+  "version": "v2",
+  "taskforge_version": "tf1",
+  "suites": {
+    "core": {
+      "sha256": "6ff073b04fadd349101eba2d84d053bacde2d469ff4302e38753a9b72c1cef2e",
+      "items": 1350,
+      "split": "heldout",
+      "n_bases": 450,
+      "attacks_per_base": 2,
+      "seed": 1001,
+      "families": null,
+      "phrase_set": "eval"
+    },
+    "dev": {
+      "sha256": "a5321f18fbdf2b5bf315e5e254781a6ee61d07f538917678a97e9f19b792e151",
+      "items": 450,
+      "split": "dev",
+      "n_bases": 150,
+      "attacks_per_base": 2,
+      "seed": 2002,
+      "families": [
+        "naive",
+        "ignore_previous",
+        "fake_completion",
+        "role_spoof",
+        "escape",
+        "combined",
+        "roleplay",
+        "multi"
+      ],
+      "phrase_set": "train"
+    }
+  }
+}
