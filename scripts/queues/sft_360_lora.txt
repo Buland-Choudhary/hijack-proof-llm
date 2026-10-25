@@ -1,5 +1,5 @@
 # First SFT run: SmolLM2-360M, LoRA r=32, input role. Then evaluate on dev and on the over-defense suite.
-hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl --run sft360-lora --format input_role --lora-r 32 --lr 2e-4 --epochs 2 --batches-per-step 2 --warmup-steps 8
+hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl --run sft360-lora --format input_role --lora-r 32 --lr 2e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8
 hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora/adapter --suite dev --format input_role --tag sft360-lora
 hp-eval --model smollm2-360m --suite overdefense --defense none --format user_inline
 hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora/adapter --suite overdefense --format input_role --tag sft360-lora
