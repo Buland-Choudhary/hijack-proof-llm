@@ -440,7 +440,7 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] Eval harness CLI (`hp-eval`): batched, HF and llama.cpp backends, JSON summaries
 - [x] Freeze eval sets (`evalsets/v1`, sha256 manifest); separate dev split
 - [x] Detector baseline code (training + evaluation), tested
-- [ ] Reset-proof evaluation: per-item outputs saved as they go, automatic resume; sequential job queue
+- [x] Reset-proof evaluation: per-item outputs saved as they go, automatic resume; sequential job queue (`hp-queue`)
 - [ ] Eval v2: dev rebuilt from seen families + train phrasings; core byte-identical to v1 (tested)
 - [ ] External evals: SecAlign protocol (AlpacaFarm prompts with inputs) and IFEval
 - [ ] Dev sweep: 5 prompting setups + zero-shot `input` role for 360M and 0.6B; choose best defense per model

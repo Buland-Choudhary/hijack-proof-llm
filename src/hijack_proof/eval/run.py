@@ -2,12 +2,18 @@
 
 hp-eval --model smollm2-360m --suite dev --defense none
 hp-eval --model qwen3-0.6b --suite core --defense sandwich --limit 100   # quick check
+
+Reset-proof: per-item rows are appended to runs/eval/<suite>__<name>.jsonl after every chunk, a
+re-run skips finished items, and a finished run (results/<suite>/<name>.json exists) is skipped
+unless --force. A time budget (--max-minutes, or the HP_DEADLINE epoch set by hp-queue) pauses the
+run cleanly with exit code 3; run the same command again to continue.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -55,6 +61,49 @@ def evaluate(
     return [score_item(i, encoder.decode_response(o)) for i, o in zip(items, outputs, strict=True)]
 
 
+PAUSED = 3  # exit code: time budget used up, run the same command again to continue
+
+
+def load_rows(path: Path) -> dict[str, dict]:
+    """Rows already saved by an interrupted run (a half-written last line is ignored)."""
+    rows: dict[str, dict] = {}
+    if path.exists():
+        for line in path.read_text().splitlines():
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            rows[row["id"]] = row
+    return rows
+
+
+def evaluate_resumable(
+    items: list[dict], generator, encoder: ChatEncoder, defense: str, max_new_tokens: int,
+    rows_path: Path, chunk_size: int = 64, deadline: float | None = None, log=print,
+) -> tuple[list[dict], bool]:  # fmt: skip
+    """Evaluate in chunks, appending rows to `rows_path`. Returns (rows in item order, finished)."""
+    done = load_rows(rows_path)
+    todo = [i for i in items if i["id"] not in done]
+    if done:
+        log(f"resuming: {len(done)} items already done, {len(todo)} to go")
+    rows_path.parent.mkdir(parents=True, exist_ok=True)
+    for start in range(0, len(todo), chunk_size):
+        # always finish at least one chunk per call, otherwise a short budget could never progress
+        if start > 0 and deadline is not None and time.time() >= deadline:
+            break
+        chunk = todo[start : start + chunk_size]
+        new_rows = evaluate(chunk, generator, encoder, defense, max_new_tokens)
+        with rows_path.open("a") as f:
+            for row in new_rows:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        done.update({r["id"]: r for r in new_rows})
+        log(f"  {len(done)}/{len(items)} items")
+    ordered = [done[i["id"]] for i in items if i["id"] in done]
+    return ordered, len(ordered) == len(items)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--model", required=True, help="folder name under models/")
@@ -68,7 +117,25 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--max-new-tokens", type=int, default=64)
     ap.add_argument("--tag", default="", help="extra label for the output file name")
+    ap.add_argument("--chunk-size", type=int, default=64, help="items per saved chunk")
+    ap.add_argument("--max-minutes", type=float, help="pause (exit 3) after this many minutes")
+    ap.add_argument("--force", action="store_true", help="re-run even if results already exist")
     args = ap.parse_args(argv)
+
+    name = f"{args.model}__{args.defense}__{args.format}" + (f"__{args.tag}" if args.tag else "")
+    if args.limit:
+        name += f"__limit{args.limit}"
+    if args.max_new_tokens != 64:
+        name += f"__mnt{args.max_new_tokens}"
+    result_path = Path("results") / args.suite / f"{name}.json"
+    rows_path = Path("runs") / "eval" / f"{args.suite}__{name}.jsonl"
+    if result_path.exists() and not args.force:
+        print(f"skip {result_path} (already done; use --force to re-run)")
+        return 0
+    deadline = float(os.environ["HP_DEADLINE"]) if "HP_DEADLINE" in os.environ else None
+    if args.max_minutes is not None:
+        own = time.time() + 60 * args.max_minutes
+        deadline = own if deadline is None else min(deadline, own)
 
     from hijack_proof.eval.generate import HFGenerator
 
@@ -89,43 +156,40 @@ def main(argv: list[str] | None = None) -> int:
         tokenizer = gen.tokenizer
     enc = ChatEncoder(tokenizer, fmt=args.format)
     t0 = time.time()
-    last = [0.0]
-
-    def progress(done, total):
-        if time.time() - last[0] > 30 or done == total:
-            last[0] = time.time()
-            print(f"  {done}/{total} items, {time.time() - t0:.0f}s", flush=True)
-
+    state_path = rows_path.with_suffix(".state.json")
+    prior_seconds = json.loads(state_path.read_text())["seconds"] if state_path.exists() else 0.0
     try:
-        rows = evaluate(items, gen, enc, args.defense, args.max_new_tokens, progress)
+        rows, finished = evaluate_resumable(
+            items, gen, enc, args.defense, args.max_new_tokens, rows_path,
+            chunk_size=args.chunk_size, deadline=deadline,
+            log=lambda m, **kw: print(f"{m} ({time.time() - t0:.0f}s)", flush=True),
+        )  # fmt: skip
     finally:
         if hasattr(gen, "close"):
             gen.close()
+    seconds = round(prior_seconds + time.time() - t0, 1)
+    state_path.write_text(json.dumps({"seconds": seconds}))
+    if not finished:
+        print(f"PAUSED {name}: {len(rows)}/{len(items)} items saved; run the same command again")
+        return PAUSED
     summary = summarize(rows)
-    name = f"{args.model}__{args.defense}__{args.format}" + (f"__{args.tag}" if args.tag else "")
     meta = {
         "model": args.model, "adapter": args.adapter, "suite": args.suite, "defense": args.defense,
         "format": args.format, "gguf": args.gguf, "limit": args.limit,
         "max_new_tokens": args.max_new_tokens,
-        "git_sha": git_sha(), "seconds": round(time.time() - t0, 1), "items": len(rows),
+        "git_sha": git_sha(), "seconds": seconds, "items": len(rows),
     }  # fmt: skip
     src = model_dir / "SOURCE.json"
     if src.exists():
         meta["model_manifest_digest"] = json.loads(src.read_text()).get("manifest_digest")
-    out_dir = Path("results") / args.suite
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{name}.json").write_text(
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    result_path.write_text(
         json.dumps({"meta": meta, "summary": summary}, indent=2, sort_keys=True) + "\n"
-    )
-    run_dir = Path("runs") / "eval"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / f"{args.suite}__{name}.jsonl").write_text(
-        "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
     )
     c, a = summary["clean_accuracy"], summary["asr_loose"]
     print(
         f"{name}: clean acc {c['mean']:.3f} | ASR loose {a['mean']:.3f} "
-        f"strict {summary['asr_strict']['mean']:.3f} | {meta['seconds']}s"
+        f"strict {summary['asr_strict']['mean']:.3f} | {seconds}s"
     )
     return 0
 

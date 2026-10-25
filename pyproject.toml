@@ -28,6 +28,7 @@ dev = ["pytest>=8.3", "ruff>=0.12"]
 [project.scripts]
 hp-fetch = "hijack_proof.models.fetch:main"
 hp-eval = "hijack_proof.eval.run:main"
+hp-queue = "hijack_proof.queue:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hijack_proof"]
