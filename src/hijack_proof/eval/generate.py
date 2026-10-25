@@ -91,7 +91,8 @@ class LlamaCppGenerator:
         env = {**os.environ, "LD_LIBRARY_PATH": bin_dir}
         self.proc = subprocess.Popen(
             [str(server_bin), "-m", str(gguf), "-c", str(ctx * parallel), "-np", str(parallel),
-             "-t", str(threads), "--port", str(port), "--host", "127.0.0.1", "--no-webui"],
+             "-t", str(threads), "--port", str(port), "--host", "127.0.0.1", "--no-webui",
+             "--cache-ram", "512"],  # default 8 GiB prompt cache caused an out-of-memory kill
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
         )  # fmt: skip
         for _ in range(startup_seconds):
