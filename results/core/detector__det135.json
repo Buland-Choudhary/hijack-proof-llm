@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "base": "smollm2-135m",
+    "epochs": 1,
+    "seed": 0,
+    "train_docs": 3000
+  },
+  "summary": {
+    "by_family": {
+      "authority": 0.9466666666666667,
+      "combined": 1.0,
+      "escape": 1.0,
+      "fake_completion": 1.0,
+      "formatting": 0.9066666666666666,
+      "ignore_previous": 1.0,
+      "multi": 1.0,
+      "multilingual": 0.96,
+      "naive": 0.9866666666666667,
+      "obfuscation": 0.8666666666666667,
+      "role_spoof": 0.9866666666666667,
+      "roleplay": 1.0
+    },
+    "detection_rate": 0.9711111111111111,
+    "detection_rate_heldout_families": 0.92,
+    "detection_rate_seen_families": 0.9966666666666667,
+    "false_positive_rate": 0.09333333333333334,
+    "n_clean": 450
+  }
+}
