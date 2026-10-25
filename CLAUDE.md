@@ -17,6 +17,9 @@
   URLs on `example.com`, or fake tool calls in the simulated environment. Never harmful content.
 - Eval sets in `evalsets/` are frozen. Never train or tune on them. Use the dev split for tuning.
 - Scope changes go into the Decision Log in `PLAN.md`. Ask the owner before big scope changes.
+- Work in tier order (plan §11): finish Tier 1 and tag `v1.0` before starting Tier 2 (GRPO, red
+  teaming, agents).
+- Dev tuning uses the dev suite only. Never choose defenses, hyperparameters or prompts on core.
 
 ## Git
 - Identity (set once per clone):
@@ -31,11 +34,14 @@
 - **Cloud environment:** CPU only (4 vCPU, AMX bf16, 15 GB RAM). Hugging Face is blocked, so
   models come from Docker Hub `ai/` via the model fetcher. PyPI, GitHub and Docker Hub are reachable.
 - **Local / GPU machines:** the same code runs. Device is auto-detected; HF fallback for models.
-- **Long jobs:**
-  - launch detached: `setsid nohup <cmd> > runs/<id>/log.txt 2>&1 &`
-  - checkpoint every ~15 minutes, and make every job resumable
-  - don't use harness background commands for anything that may take more than ~1.5 hours,
-    because they get killed at the time limit
+- **Long jobs (plan §9, D12):** the cloud machine can be reset while a session is idle, which kills
+  detached jobs and scheduled check-ins (this happened on 2026-10-25).
+  - every job must be resumable at a fine grain: evals append per-item outputs and skip finished
+    items on restart; training checkpoints every ~15 minutes with `--resume`
+  - run one heavy CPU job at a time through the job queue; parallel jobs slow each other 2x or more
+  - in the cloud, keep jobs in chunks of <=30 minutes and check in at least every ~10 minutes
+  - multi-hour unattended runs belong on the owner's own machine (same code, same commands)
+  - after any restart, run `uptime` and check `runs/` before assuming a job is still alive
 - Keep disk use in check: delete old checkpoints, keep the best and the last.
 
 ## Where things go
@@ -55,4 +61,10 @@
 - Commit and push.
 
 ## Commands
-Filled in as they're built (M0–M2): setup, test, lint, fetch models, eval, train.
+- setup: `python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"` then `scripts/install_hooks.sh`
+- test / lint: `.venv/bin/pytest` and `.venv/bin/ruff check . && .venv/bin/ruff format .`
+- fetch models: `.venv/bin/hp-fetch smollm2-360m qwen3-0.6b` (`--list` shows all)
+- llama.cpp: `scripts/setup_llama_cpp.sh`, `scripts/to_gguf.sh models/<name> q8_0`
+- eval: `.venv/bin/hp-eval --model <name> --suite dev|core --defense none|sandwich|...`
+  (add `--gguf <file>` to use llama.cpp)
+- more commands are added here as they are built (job queue, training, serving).

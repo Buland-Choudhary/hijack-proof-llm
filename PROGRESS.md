@@ -1,8 +1,10 @@
 # Progress log
 
 ## Current status
-- **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 done (llama.cpp built; GGUF conversion and CPU throughput benchmark in results/bench).
-- **Next up:** llama.cpp generation backend (for 1.7B/4B), then run the baseline matrix (5 models x prompting defenses) and the detector baseline.
+- **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
+- **Milestone:** M2 (benchmark and baselines), in progress. M0 and M1 done.
+- **Next up (in order):** reset-proof evals + job queue, eval v2 (dev rebuilt), SecAlign-protocol and
+  IFEval adapters, dev sweep, core baselines, detector run, baseline table + README findings.
 - **Blockers:** none.
 
 ## Session log
@@ -47,5 +49,15 @@
   (SmolLM2-135M sequence classifier trained on TaskForge train docs with train-only attacks; reports
   detection rate by family and false-alarm rate) with tests. `build_training_attacks` is the shared
   builder for training data (seen families + train phrasings only).
-- Running in background: baseline matrix (`scripts/run_baselines.sh`, log in runs/baselines/matrix.log).
-  Slow while other CPU work competes; avoid heavy jobs until it finishes. Detector training waits for it.
+- First real baseline result (`results/core/smollm2-135m__none__user_inline.json`): SmolLM2-135M with no
+  defense: clean accuracy 0.251, loose ASR 0.262, strict ASR 0.237 (1350 items, 933 s while other CPU
+  work was running). The model is too weak for ASR to mean much; 360M and 0.6B are the informative ones.
+
+### 2026-10-25, cloud machine reset
+- The cloud machine was reset while the session was idle (uptime was 2 minutes on return). The
+  detached baseline matrix died after 1 of 15 runs, and the scheduled check-in never fired. Code and
+  results already pushed to GitHub were safe.
+- Lesson: unattended multi-hour cloud jobs are unreliable. Plan revised to v1.1: Tier 1 / Tier 2
+  split, per-item resumable evals, job queue with one heavy job at a time, <=30-minute chunks.
+- Found that eval v1 dev contained held-out families and eval phrasings (leak into "unseen attack"
+  claims if used for tuning). Fix is eval v2 (core unchanged).
