@@ -59,6 +59,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--model", required=True, help="folder name under models/")
     ap.add_argument("--adapter", help="optional LoRA adapter folder")
+    ap.add_argument("--gguf", help="evaluate this GGUF file with llama.cpp instead of HF weights")
+    ap.add_argument("--parallel", type=int, default=4, help="llama.cpp parallel slots")
     ap.add_argument("--suite", default="dev")
     ap.add_argument("--defense", default="none", choices=DEFENSES)
     ap.add_argument("--format", default="user_inline", choices=["user_inline", "input_role"])
@@ -75,8 +77,17 @@ def main(argv: list[str] | None = None) -> int:
         step = max(1, len(items) // args.limit)
         items = items[::step][: args.limit]
     model_dir = Path("models") / args.model
-    gen = HFGenerator(model_dir, batch_size=args.batch_size, adapter_dir=args.adapter)
-    enc = ChatEncoder(gen.tokenizer, fmt=args.format)
+    if args.gguf:
+        from transformers import AutoTokenizer
+
+        from hijack_proof.eval.generate import LlamaCppGenerator
+
+        tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        gen = LlamaCppGenerator(args.gguf, parallel=args.parallel)
+    else:
+        gen = HFGenerator(model_dir, batch_size=args.batch_size, adapter_dir=args.adapter)
+        tokenizer = gen.tokenizer
+    enc = ChatEncoder(tokenizer, fmt=args.format)
     t0 = time.time()
     last = [0.0]
 
@@ -85,12 +96,17 @@ def main(argv: list[str] | None = None) -> int:
             last[0] = time.time()
             print(f"  {done}/{total} items, {time.time() - t0:.0f}s", flush=True)
 
-    rows = evaluate(items, gen, enc, args.defense, args.max_new_tokens, progress)
+    try:
+        rows = evaluate(items, gen, enc, args.defense, args.max_new_tokens, progress)
+    finally:
+        if hasattr(gen, "close"):
+            gen.close()
     summary = summarize(rows)
     name = f"{args.model}__{args.defense}__{args.format}" + (f"__{args.tag}" if args.tag else "")
     meta = {
         "model": args.model, "adapter": args.adapter, "suite": args.suite, "defense": args.defense,
-        "format": args.format, "limit": args.limit, "max_new_tokens": args.max_new_tokens,
+        "format": args.format, "gguf": args.gguf, "limit": args.limit,
+        "max_new_tokens": args.max_new_tokens,
         "git_sha": git_sha(), "seconds": round(time.time() - t0, 1), "items": len(rows),
     }  # fmt: skip
     src = model_dir / "SOURCE.json"
