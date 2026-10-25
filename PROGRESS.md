@@ -1,10 +1,11 @@
 # Progress log
 
 ## Current status
-- **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D14).
-- **Milestone:** M2 (benchmark and baselines), in progress; M3 code (SFT trainer, data builder, runner) written ahead while the CPU runs the dev sweep. M0 and M1 done.
-- **Next up (in order):** core baselines (`scripts/queues/core_baselines.txt`), detector run, baseline table +
-  README findings, then SFT data generation and training.
+- **Plan:** v1.1 (revised 2026-10-25; see PLAN.md decisions D6-D15).
+- **Milestone:** M2 (benchmark and baselines) is DONE. Next: M3 (SFT).
+- **Next up (in order):** (1) generate SFT data for SmolLM2-360M and Qwen3-0.6B with `hp-sftdata`
+  (resumable, needs the CPU), (2) over-defense suite + 8-gram overlap report, (3) smoke-run `hp-sft`,
+  (4) train 360M LoRA / full and 0.6B LoRA, evaluate on dev then core, ablations.
 - **Blockers:** none.
 
 ## Session log
@@ -86,3 +87,13 @@
 - Dev sweep finished (12 jobs). Chosen baseline defense for both SmolLM2-360M and Qwen3-0.6B: sandwich
   (lowest loose ASR with <=3 points clean-accuracy loss; spotlight blocks more attacks but costs 13-20
   points of clean accuracy). Tables: `results/baselines/dev_table.md`.
+
+### 2026-10-25, M2 finished
+- Core baselines done (results/core/*.json), IFEval for 360M and 0.6B (results/ifeval), detector
+  (results/core/detector__det135.json). Headline: untrained models obey hidden instructions in 26-59% of
+  attacks; sandwich cuts 0.6B from 45.3% to 33.8%; held-out styles are weaker on untrained models
+  (0.6B: 39.0% vs 48.5%); detector flags 97.1% with a 9.3% false-alarm rate.
+- Charts: results/baselines/asr_by_model.png and asr_by_family.png (`hp-charts`); tables via `hp-report`.
+- Incidents: llama-server OOM-killed by its default 8 GB prompt cache (fixed with --cache-ram 512), one
+  cold-disk server start timeout (limit raised to 900 s), 2-hour limit on a background wrapper
+  (resumed). All runs resumed without losing items.

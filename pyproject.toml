@@ -23,6 +23,7 @@ dependencies = [
     "immutabledict>=4.2",
     "langdetect>=1.0.9",
     "nltk>=3.9",
+    "matplotlib>=3.9",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +38,7 @@ hp-ifeval = "hijack_proof.eval.ifeval_run:main"
 hp-report = "hijack_proof.eval.report:main"
 hp-sftdata = "hijack_proof.data.build_sft:main"
 hp-sft = "hijack_proof.train.run_sft:main"
+hp-charts = "hijack_proof.eval.charts:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hijack_proof"]

@@ -445,9 +445,9 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] SecAlign-style injection suite on held-out Alpaca-cleaned prompts (D15), frozen in eval v2
 - [x] IFEval adapter (`hp-ifeval`, vendored official checkers, general-usefulness metric)
 - [x] Dev sweep: 5 prompting setups + zero-shot `input` role for 360M and 0.6B; chosen defense per model (sandwich for both) in `results/baselines/chosen_defenses.json`
-- [ ] Core baselines: none + chosen defense (135M, 360M, 0.6B); none for Qwen3-1.7B and 4B
-- [ ] Detector baseline run (train split → core)
-- [ ] Markdown baseline table + charts in `results/baselines/`; README findings; design note M2
+- [x] Core baselines: 360M and 0.6B none + sandwich, 135M none, Qwen3-1.7B none, Qwen3-4B none (every third item); IFEval for 360M and 0.6B
+- [x] Detector baseline run (train split → core)
+- [x] Markdown baseline table + charts in `results/baselines/` (`hp-report`, `hp-charts`); README findings; design note M2 (`docs/notes/M2-benchmark-and-baselines.md`)
 
 *Done when:* the baseline table is reproducible and the README shows the findings.
 
