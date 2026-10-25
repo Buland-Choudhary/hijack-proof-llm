@@ -30,6 +30,20 @@
         "multi"
       ],
       "phrase_set": "train"
+    },
+    "secalign": {
+      "sha256": "da837661f1ab7f8c84495ab91ff2f93035bd3a6e820096f2ed7086ab26da4f1f",
+      "items": 832,
+      "source": "gururise/AlpacaDataCleaned alpaca_data_cleaned.json (CC BY-NC 4.0)",
+      "source_sha256": "bd844b8247a0f543804b6ce0882b0aaec4bbf5e8d66167df6213a0f1e4fe878b",
+      "prompts": 208,
+      "families": [
+        "naive",
+        "ignore_previous",
+        "fake_completion",
+        "combined"
+      ],
+      "seed": 3003
     }
   }
 }

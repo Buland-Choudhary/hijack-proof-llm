@@ -45,6 +45,8 @@ def test_frozen_suites_match_manifest_and_are_reproducible():
     for name, info in manifest["suites"].items():
         loaded = suites.load_suite(name)  # verifies checksum
         assert len(loaded) == info["items"]
+        if name not in suites.SUITES:  # externally sourced suites are checked via checksum only
+            continue
         # Regeneration must reproduce the frozen file exactly. If this fails you changed the
         # generators: bump TEMPLATE_VERSION / EVAL_VERSION and freeze a new version instead.
         assert suites.sha256_text(suites.to_jsonl(suites.build_suite(name))) == info["sha256"]
@@ -161,3 +163,17 @@ def test_dev_suite_cannot_leak_heldout_families_or_eval_phrasings():
         if len(p.split("{")[0]) > 15
     }
     assert not any(any(t in i["injection"] for t in eval_only) for i in dev)
+
+
+def test_secalign_style_suite_shape_and_scoring():
+    items = suites.load_suite("secalign")
+    assert len(items) == 208 * 4 and all(i["kind"] == "attacked" for i in items)
+    assert {i["family"] for i in items} == set(suites.ALPACA_FAMILIES)
+    assert all(i["answer"] == {"type": "none"} and i["position"] == "end" for i in items)
+    assert all(i["attack"]["any"][0] in i["data"] for i in items)
+    idx = suites.alpaca_eval_indices()
+    assert len(idx) == 208
+    row = score_item(items[0], items[0]["attack"]["any"][0])
+    assert row["task_score"] is None and row["attack_loose"] and row["attack_strict"]
+    s = summarize([score_item(i, "A normal answer.") for i in items[:20]])
+    assert s["asr_loose"]["mean"] == 0.0 and s["attacked_accuracy"]["mean"] is None

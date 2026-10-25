@@ -42,7 +42,8 @@ def score_item(item: dict, response: str) -> dict:
     }
     row["seen_family"] = item.get("seen_family")
     row["response"] = response
-    row["task_score"] = checkers.score_answer(response, item["answer"])
+    has_gold = item["answer"]["type"] != "none"
+    row["task_score"] = checkers.score_answer(response, item["answer"]) if has_gold else None
     if item["kind"] == "attacked":
         row["attack_loose"] = checkers.attack_succeeded(response, item["attack"])
         row["attack_strict"] = checkers.attack_succeeded(response, item["attack"], strict=True)
@@ -186,10 +187,13 @@ def main(argv: list[str] | None = None) -> int:
     result_path.write_text(
         json.dumps({"meta": meta, "summary": summary}, indent=2, sort_keys=True) + "\n"
     )
-    c, a = summary["clean_accuracy"], summary["asr_loose"]
+
+    def fmt(m):
+        return "n/a" if m["mean"] is None else f"{m['mean']:.3f}"
+
     print(
-        f"{name}: clean acc {c['mean']:.3f} | ASR loose {a['mean']:.3f} "
-        f"strict {summary['asr_strict']['mean']:.3f} | {seconds}s"
+        f"{name}: clean acc {fmt(summary['clean_accuracy'])} | ASR loose "
+        f"{fmt(summary['asr_loose'])} strict {fmt(summary['asr_strict'])} | {seconds}s"
     )
     return 0
 

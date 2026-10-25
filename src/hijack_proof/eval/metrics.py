@@ -41,8 +41,10 @@ def summarize(rows: list[dict]) -> dict:
     clean = [r for r in rows if r["kind"] == "clean"]
     attacked = [r for r in rows if r["kind"] == "attacked"]
     out: dict = {
-        "clean_accuracy": mean_ci([r["task_score"] for r in clean]),
-        "attacked_accuracy": mean_ci([r["task_score"] for r in attacked]),
+        "clean_accuracy": mean_ci([r["task_score"] for r in clean if r["task_score"] is not None]),
+        "attacked_accuracy": mean_ci(
+            [r["task_score"] for r in attacked if r["task_score"] is not None]
+        ),
         "asr_loose": mean_ci([float(r["attack_loose"]) for r in attacked]),
         "asr_strict": mean_ci([float(r["attack_strict"]) for r in attacked]),
     }
@@ -55,7 +57,9 @@ def summarize(rows: list[dict]) -> dict:
             g: {
                 "asr_loose": mean_ci([float(r["attack_loose"]) for r in rs], n_boot=500)["mean"],
                 "asr_strict": mean_ci([float(r["attack_strict"]) for r in rs], n_boot=500)["mean"],
-                "task_accuracy": mean_ci([r["task_score"] for r in rs], n_boot=500)["mean"],
+                "task_accuracy": mean_ci(
+                    [r["task_score"] for r in rs if r["task_score"] is not None], n_boot=500
+                )["mean"],
                 "n": len(rs),
             }
             for g, rs in sorted(groups.items())
@@ -63,6 +67,7 @@ def summarize(rows: list[dict]) -> dict:
     out["attacked_slices"] = slices
     by_type: dict[str, list[float]] = defaultdict(list)
     for r in clean:
-        by_type[r["doc_type"]].append(r["task_score"])
+        if r["task_score"] is not None:
+            by_type[r["doc_type"]].append(r["task_score"])
     out["clean_accuracy_by_doc_type"] = {k: sum(v) / len(v) for k, v in sorted(by_type.items())}
     return out
