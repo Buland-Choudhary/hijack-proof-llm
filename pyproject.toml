@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hijack-proof"
+version = "0.1.0"
+description = "Training small open LLMs to resist prompt injection (SFT, DPO, GRPO, red teaming)."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "Buland Choudhary" }]
+dependencies = [
+    "torch>=2.6",
+    "transformers>=4.56",
+    "peft>=0.17",
+    "safetensors>=0.5",
+    "numpy>=2.0",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+track = ["mlflow>=3.0"]
+dev = ["pytest>=8.3", "ruff>=0.12"]
+
+[project.scripts]
+hp-fetch = "hijack_proof.models.fetch:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hijack_proof"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["slow: needs downloaded model weights (skipped in CI)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
