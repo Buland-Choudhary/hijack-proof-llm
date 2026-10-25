@@ -22,7 +22,8 @@ from hijack_proof.attacks.library import build_training_attacks
 from hijack_proof.data import taskforge as tf
 
 
-def load_classifier(model_dir: str | Path, dtype=torch.bfloat16):
+def load_classifier(model_dir: str | Path, dtype=torch.float32):
+    # fp32 master weights; the forward/backward runs in bf16 autocast (see train / predict)
     tok = AutoTokenizer.from_pretrained(model_dir)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir, num_labels=2, dtype=dtype)
     model.config.pad_token_id = tok.pad_token_id or 0
@@ -54,7 +55,9 @@ def train(tok, model, texts, labels, epochs=1, lr=2e-5, batch_size=8, max_len=51
             enc = tok(texts[i : i + batch_size], return_tensors="pt", padding=True,
                       truncation=True, max_length=max_len)  # fmt: skip
             y = torch.tensor(labels[i : i + batch_size])
-            loss = torch.nn.functional.cross_entropy(model(**enc).logits.float(), y)
+            with torch.autocast("cpu", dtype=torch.bfloat16):
+                logits = model(**enc).logits
+            loss = torch.nn.functional.cross_entropy(logits.float(), y)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -75,7 +78,9 @@ def predict(tok, model, texts, batch_size=16, max_len=512) -> list[float]:
         idx = order[i : i + batch_size]
         enc = tok([texts[j] for j in idx], return_tensors="pt", padding=True,
                   truncation=True, max_length=max_len)  # fmt: skip
-        p = torch.softmax(model(**enc).logits.float(), dim=-1)[:, 1].tolist()
+        with torch.autocast("cpu", dtype=torch.bfloat16):
+            logits = model(**enc).logits
+        p = torch.softmax(logits.float(), dim=-1)[:, 1].tolist()
         for j, pj in zip(idx, p, strict=True):
             probs[j] = pj
     return probs
