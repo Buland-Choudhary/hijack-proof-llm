@@ -2,7 +2,7 @@
 
 ## Current status
 - **Milestone:** M2 (benchmark and baselines), in progress. M0 done; M1 done (llama.cpp built; GGUF conversion and CPU throughput benchmark in results/bench).
-- **Next up:** eval harness (batched generation, caching, tables), then freeze eval sets and run baselines.
+- **Next up:** llama.cpp generation backend (for 1.7B/4B), then run the baseline matrix (5 models x prompting defenses) and the detector baseline.
 - **Blockers:** none.
 
 ## Session log
@@ -37,3 +37,9 @@
   example.com, refuse, answer in French), train vs eval phrasings, 3 positions. Loose and strict
   (response-starts-with) attack-success checks. Tests: clean oracle answers never trigger a false
   attack hit; role-spoofing cannot create real role markers after sanitization.
+- M2: eval harness done. `hp-eval` runs a model over a frozen suite with greedy decoding; metrics have
+  95% bootstrap CIs, McNemar test, per-family/payload/position slices. Prompting-defense baselines:
+  none, delimiters, warning, sandwich, spotlight. Frozen sets in `evalsets/v1/` (core: 450 documents,
+  each clean + 2 attacked = 1350 items from held-out templates; dev: 450 items), sha256 manifest,
+  regeneration test fails if generators change (bump versions instead). Smoke run on SmolLM2-135M works
+  (60-item sample: not a result, only a pipeline check).

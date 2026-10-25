@@ -30,6 +30,7 @@ class Prompt:
     instruction: str
     data: str | None = None
     system: str = DEFAULT_SYSTEM
+    suffix: str = ""  # trusted text placed after the data (user_inline only, e.g. sandwich defense)
 
 
 class ChatEncoder:
@@ -52,6 +53,8 @@ class ChatEncoder:
 
     def _segments(self, p: Prompt) -> list[tuple[str, bool]]:
         """(text, is_untrusted) pieces of the prompt, in order."""
+        if p.suffix and self.fmt != "user_inline":
+            raise ValueError("suffix is only supported in the user_inline format")
         segs: list[tuple[str, bool]] = [(f"<|im_start|>system\n{p.system}{self.end}\n", False)]
         if p.data is None:
             segs.append((f"<|im_start|>user\n{p.instruction}{self.end}\n", False))
@@ -63,10 +66,11 @@ class ChatEncoder:
                 (f"{self.end}\n", False),
             ]
         else:  # user_inline
+            tail = f"\n\n{p.suffix}" if p.suffix else ""
             segs += [
                 (f"<|im_start|>user\n{p.instruction}\n\n", False),
                 (p.data, True),
-                (f"{self.end}\n", False),
+                (f"{tail}{self.end}\n", False),
             ]
         segs.append((self.assistant_prefix, False))
         return segs

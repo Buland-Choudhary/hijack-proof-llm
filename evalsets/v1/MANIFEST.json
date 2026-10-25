@@ -1,0 +1,22 @@
+{
+  "version": "v1",
+  "taskforge_version": "tf1",
+  "suites": {
+    "core": {
+      "sha256": "6ff073b04fadd349101eba2d84d053bacde2d469ff4302e38753a9b72c1cef2e",
+      "items": 1350,
+      "split": "heldout",
+      "n_bases": 450,
+      "attacks_per_base": 2,
+      "seed": 1001
+    },
+    "dev": {
+      "sha256": "6c67e9641de408d14759b5c39aa672c05cb1e9fc2dba6bd1278557c18d96885f",
+      "items": 450,
+      "split": "dev",
+      "n_bases": 150,
+      "attacks_per_base": 2,
+      "seed": 2002
+    }
+  }
+}

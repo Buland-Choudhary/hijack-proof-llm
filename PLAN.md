@@ -366,8 +366,8 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] TaskForge generator and checkers (≥10 document types, ≥15 question types), seeded
 - [x] Attack library (12 families incl. multi-injection, train/held-out split) and success checkers
 - [ ] External eval adapters: AlpacaFarm-injection (SecAlign protocol), BIPIA subset, Tensor Trust, IFEval
-- [ ] Eval harness CLI (`hp-eval --model … --suite core`): batched, cached, writes JSON + markdown tables
-- [ ] Freeze eval sets (`evalsets/v1`, sha256 manifest); separate dev split
+- [x] Eval harness CLI (`hp-eval --model … --suite core`): batched, writes JSON (markdown tables still to do)
+- [x] Freeze eval sets (`evalsets/v1`, sha256 manifest); separate dev split
 - [ ] Baselines: 5 undefended models × prompting defenses; detector baseline
 - [ ] Baseline table with confidence intervals and charts in `results/baselines/`; design note M2
 
