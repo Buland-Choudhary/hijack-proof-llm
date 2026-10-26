@@ -161,3 +161,14 @@
   (loose 49.7% vs 59.9% untrained). The directive rows recover 10.1 of the 17.7 lost points; a 7.6-point gap remains
   (outside the 3-point target; the interval is about +/-4 points). To be reported as a limitation. Final-test queue
   (`scripts/queues/m3_final.txt`, 13 jobs) started 05:00.
+
+### 2026-10-26, final-test (core) result for SmolLM2-360M attempt 4 and the trade-off
+- SmolLM2-360M core (frozen final test), loose ASR: untrained 44.4%, attack-only (attempt 3) 11.3%, with trusted-
+  directive rows (attempt 4) 29.4% (seen styles 31.8%, held-out styles 24.7%). Clean accuracy 41.3% / 43.3% / 42.7%.
+  Dev had suggested 13.7% for attempt 4: the dev suite uses training phrasings and seen styles; the final test uses
+  unseen wordings, where the "refuse" directive is obeyed 70% of the time (attempt 3: 17%, untrained 79%) and
+  the "fake answer" directive 51% (36%, 58%).
+- Reading: a 360M model cannot reliably tell an identical directive in a document from the same directive from the
+  user. The two variants sit at different points of one trade-off (attack protection vs trusted-directive
+  compliance). Both are reported. DPO (M4) with contrastive pairs (same directive in the document: reject obeying;
+  in the user turn: reject ignoring) targets exactly this separation and is the next step after the final queue.
