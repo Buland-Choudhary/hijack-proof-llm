@@ -1,0 +1,33 @@
+{
+  "run": "qwen06-lora-uf",
+  "base": "qwen3-0.6b",
+  "format": "input_role",
+  "lora_r": 32,
+  "config": {
+    "lr": 0.0001,
+    "epochs": 2.0,
+    "max_tokens_per_batch": 1024,
+    "batches_per_step": 8,
+    "warmup_steps": 8,
+    "weight_decay": 0.0,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "seed": 0,
+    "ckpt_minutes": 15.0,
+    "log_every": 5,
+    "max_rss_gb": 11.0
+  },
+  "data": {
+    "rows": 2247,
+    "kept": 2247,
+    "dropped_too_long": 0,
+    "tokens": 360056,
+    "target_tokens": 73499,
+    "data_sha256": "4b960f34da12503305c6fa4c42b5018ce2caeb304a486378713fed7aec9bd8aa",
+    "target_source": "self,directive"
+  },
+  "steps": 100,
+  "first_loss": 0.45926123378861006,
+  "final_loss": 0.08515131361079666,
+  "train_seconds": 748.1
+}
