@@ -172,3 +172,19 @@
   user. The two variants sit at different points of one trade-off (attack protection vs trusted-directive
   compliance). Both are reported. DPO (M4) with contrastive pairs (same directive in the document: reject obeying;
   in the user turn: reject ignoring) targets exactly this separation and is the next step after the final queue.
+
+## Input-role ablation (SmolLM2-360M, same LoRA recipe, dev split)
+Run: `sft360-lora-uf-inline` (user_inline format) vs `sft360-lora-uf` (input_role format). Files:
+`results/dev/smollm2-360m__none__user_inline__sft360-lora-uf-inline.json`,
+`results/userfollow_dev/...sft360-lora-uf-inline.json`, `results/overdefense/...sft360-lora-uf-inline.json`.
+
+| Format | Attack success (dev, n=300) | Clean accuracy (n=150) | Trusted-directive compliance (n=150) |
+|---|---|---|---|
+| input_role | 13.7% (10.0-17.7) | 50.7% (42.7-58.7) | 49.3% (41.3-57.3) |
+| user_inline | 17.7% (13.7-22.3) | 47.3% (39.3-55.3) | 42.7% (35.3-50.7) |
+
+The input role is better on all three, but every interval overlaps, so on 360M this is a trend, not a
+significant effect. Stated as such in the write-up.
+
+Ops note: the cloud VM is suspended between turns (uptime resets, detached jobs die). Jobs advance
+only while a turn is active, so long runs are driven with in-turn waits and checkpoint every 3 minutes.
