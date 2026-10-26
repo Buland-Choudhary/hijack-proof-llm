@@ -10,7 +10,7 @@ hp-eval --model qwen3-0.6b --suite userfollow --defense none --format user_inlin
 hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-self/adapter --suite userfollow --format input_role --tag qwen06-lora-self
 hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --suite userfollow --format input_role --tag qwen06-lora-uf
 # Input-role ablation (SmolLM2-360M): same recipe, document inline in the user turn instead of its own role.
-hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl data/generated/sft_userfollow.jsonl --run sft360-lora-uf-inline --format user_inline --target-source self,directive --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8
-hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite dev --format user_inline --tag sft360-lora-uf-inline
-hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite userfollow_dev --format user_inline --tag sft360-lora-uf-inline
-hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite overdefense --format user_inline --tag sft360-lora-uf-inline
+hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl data/generated/sft_userfollow.jsonl --run sft360-lora-uf-inline --format user_inline --target-source self,directive --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8 --ckpt-minutes 3
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite dev --format user_inline --tag sft360-lora-uf-inline --ckpt-minutes 3
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite userfollow_dev --format user_inline --tag sft360-lora-uf-inline --ckpt-minutes 3
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf-inline/adapter --suite overdefense --format user_inline --tag sft360-lora-uf-inline --ckpt-minutes 3
