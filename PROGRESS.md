@@ -150,3 +150,5 @@
   url 57, fake answer 57), attack-only SFT (`qwen06-lora-self`) 0.0% on every payload. The over-generalization is
   total for the main model, so the attempt-4 recipe (self answers + directive rows) is queued for Qwen3-0.6B
   (`scripts/queues/m3_qwen_uf.txt`).
+- IFEval (strict) for Qwen3-0.6B: untrained 54.9%, attack-only SFT (`qwen06-lora-self`) 37.2% (-17.7 points), matching
+  the 0.0% trusted-directive compliance. The attempt-4 recipe for Qwen3-0.6B (`qwen06-lora-uf`) started 03:10.

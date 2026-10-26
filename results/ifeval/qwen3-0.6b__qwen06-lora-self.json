@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "adapter": "runs/sft/qwen06-lora-self/adapter",
+    "gguf": null,
+    "git_sha": "d6a6d0e",
+    "limit": null,
+    "max_new_tokens": 320,
+    "model": "qwen3-0.6b",
+    "prompts": 541,
+    "seconds": 2225.0
+  },
+  "summary": {
+    "instruction_loose": {
+      "hi": 0.564748201438849,
+      "lo": 0.4952038369304556,
+      "mean": 0.5287769784172662,
+      "n": 834
+    },
+    "instruction_strict": {
+      "hi": 0.526378896882494,
+      "lo": 0.4580335731414868,
+      "mean": 0.4904076738609113,
+      "n": 834
+    },
+    "prompt_loose": {
+      "hi": 0.44731977818853974,
+      "lo": 0.3659889094269871,
+      "mean": 0.4048059149722736,
+      "n": 541
+    },
+    "prompt_strict": {
+      "hi": 0.41404805914972276,
+      "lo": 0.33086876155268025,
+      "mean": 0.37153419593345655,
+      "n": 541
+    }
+  }
+}
