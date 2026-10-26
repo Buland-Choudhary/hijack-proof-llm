@@ -139,3 +139,7 @@
   SmolLM2-360M untrained 27.3% compliance (40 canary / 23 french / 33 refuse / 0 url / 40 fake answer), attempt-3
   trained 6.0% (3 / 0 / 7 / 0 / 20). Attack-only training makes the model ignore directives from the trusted user
   too. Attempt 4 (300 contrastive rows where the user asks and the model complies, plus attempt-3 data) is training.
+- Attempt 4 (`sft360-lora-uf`: attempt-3 data + 300 trusted-directive rows, same hyperparameters), dev:
+  trusted-directive compliance 6.0% -> 49.3% (untrained 27.3%), loose ASR 13.7% (attempt 3: 4.3%; untrained 37.7%),
+  clean accuracy 50.7% (unchanged), over-defense accuracy 90.5% (attempt 3: 88.0%, untrained 89.0%). Meets
+  all three gates (D16). IFEval for this model is running. Plan: use this recipe for both models.

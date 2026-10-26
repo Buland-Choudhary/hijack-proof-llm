@@ -293,8 +293,14 @@ formulas) on toy inputs. Code is device-agnostic: CPU here, CUDA/MPS automatical
   - 360M LoRA
   - 0.6B LoRA (r=16–64, all linear layers; LoRA only for 0.6B, see D13)
 - Ablations: with vs without the `input` role; data mix ratio.
-- **Gate:** seen-family ASR drops by ≥50% (relative) and clean accuracy drops ≤3 points.
-  Otherwise, tune the mix and LR (max 3 tries), then record the outcome and continue.
+- **Gate (D16 adds the third condition):**
+  1. seen-family ASR drops by ≥50% (relative)
+  2. clean accuracy drops ≤3 points
+  3. compliance with trusted user directives (`userfollow_dev`) is at least that of the untrained model
+     (the model must follow the user, not only ignore documents)
+
+  Otherwise, tune the mix and LR (max 3 tries on the original gates; the added gate triggered one
+  extra recipe change), then record the outcome and continue.
 
 ### Stage 2: DPO (Tier 1, M4)
 - Pairs: chosen = the verified answer to the user's task; rejected = the model's own response to
@@ -580,6 +586,7 @@ Disk: ~15 GB free after models, environments and builds.
 | D13 | 2026-10-25 | Disk policy: 0.6B LoRA only; best + last checkpoints; 1.7B/4B kept as GGUF only | ~15 GB free disk in the cloud |
 | D14 | 2026-10-25 | SecAlign protocol and IFEval are required before training; BIPIA and Tensor Trust become optional (Tier 2) | comparability with published work and general usefulness matter most; the others cost time |
 | D15 | 2026-10-25 | The SecAlign-style suite uses a seeded held-out sample of Alpaca-cleaned (208 prompts with inputs, 4 standard attack types, canary payload at the end of the input) instead of the AlpacaFarm prompts. It measures ASR only, and numbers are not directly comparable with published ones. Its rows are excluded from training. | the AlpacaFarm prompts are only on Hugging Face (blocked in the cloud); AlpacaEval's GitHub copy has the input merged into the instruction |
+| D16 | 2026-10-26 | Add a third SFT gate: compliance with trusted user directives (`userfollow_dev`, new suite) must be at least the untrained model's. Training data gets contrastive rows where the user asks for payload-style directives and the model obeys (`sft_userfollow.jsonl`, deterministic targets). | IFEval fell 29.6% -> 20.5% for the attack-only SmolLM2-360M; `userfollow_dev` showed compliance 27.3% -> 6.0%: attack-only training over-generalizes to ignoring the trusted user. Found after the original gates were set, so recorded as an amendment, not a silent change. |
 
 ## 15. Working agreement
 
