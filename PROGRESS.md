@@ -188,3 +188,19 @@ significant effect. Stated as such in the write-up.
 
 Ops note: the cloud VM is suspended between turns (uptime resets, detached jobs die). Jobs advance
 only while a turn is active, so long runs are driven with in-turn waits and checkpoint every 3 minutes.
+
+## M4 DPO, first run (SmolLM2-360M, dev split only)
+Run `dpo360-b01`: starts from the `sft360-lora-uf` adapter; 1,400 injection pairs + 300 directive pairs,
+beta 0.1, lr 2e-5, 1 epoch, 110 steps (`results/dpo/train_dpo360-b01.json`).
+
+| Dev metric | SFT (`sft360-lora-uf`) | + DPO (`dpo360-b01`) |
+|---|---|---|
+| Attack success (loose) | 13.7% (10.0-17.7) | 2.0% (0.7-3.7) |
+| Clean accuracy | 50.7% (42.7-58.7) | 50.7% (42.7-58.7) |
+| Accuracy under attack | 42.3% (37.0-48.0) | 53.3% (47.7-58.7) |
+| Trusted-directive compliance | 49.3% (41.3-57.3) | 25.3% (18.7-32.0) |
+| Over-defense suite accuracy | 90.5% (86.0-94.5) | 75.5% (69.5-81.5) |
+
+DPO cuts attack success a lot but over-generalizes: it now ignores more trusted directives and does
+worse on the over-defense suite. Fix to try next: more directive pairs, an NLL term on the chosen
+response (RPO), lower lr. Not tuned on core or any frozen test set.
