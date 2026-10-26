@@ -135,3 +135,7 @@
   61.3% -> 64.0% (92 -> 96 of 150, McNemar p=0.48), over-defense accuracy 91.0% -> 90.5%. Passes all dev gates
   on the first attempt. Final-test evaluation waits for the userfollow/IFEval diagnostics (queue
   `scripts/queues/m3_userfollow.txt`).
+- Over-generalization confirmed on `userfollow_dev` (trusted directive in the USER turn; higher is better):
+  SmolLM2-360M untrained 27.3% compliance (40 canary / 23 french / 33 refuse / 0 url / 40 fake answer), attempt-3
+  trained 6.0% (3 / 0 / 7 / 0 / 20). Attack-only training makes the model ignore directives from the trusted user
+  too. Attempt 4 (300 contrastive rows where the user asks and the model complies, plus attempt-3 data) is training.
