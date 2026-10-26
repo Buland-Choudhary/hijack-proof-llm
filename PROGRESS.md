@@ -157,3 +157,7 @@
   compliance 60.0% -> 92.7% (attack-only: 0.0%), over-defense 91.0% -> 90.5%. Passes all three gates, so the
   main-model recipe is final. Queued `scripts/queues/m3_final.txt`: final-test (core) runs for both chosen models and the
   attack-only Qwen ablation, userfollow (final suite) for all variants, and the input-role ablation on SmolLM2-360M.
+- IFEval (strict) for Qwen3-0.6B: untrained 54.9%, attack-only 37.2%, attempt-4 recipe (`qwen06-lora-uf`) 47.3%
+  (loose 49.7% vs 59.9% untrained). The directive rows recover 10.1 of the 17.7 lost points; a 7.6-point gap remains
+  (outside the 3-point target; the interval is about +/-4 points). To be reported as a limitation. Final-test queue
+  (`scripts/queues/m3_final.txt`, 13 jobs) started 05:00.
