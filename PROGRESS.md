@@ -152,3 +152,8 @@
   (`scripts/queues/m3_qwen_uf.txt`).
 - IFEval (strict) for Qwen3-0.6B: untrained 54.9%, attack-only SFT (`qwen06-lora-self`) 37.2% (-17.7 points), matching
   the 0.0% trusted-directive compliance. The attempt-4 recipe for Qwen3-0.6B (`qwen06-lora-uf`) started 03:10.
+- Qwen3-0.6B attempt-4 recipe (`qwen06-lora-uf`, 2,000-ish rows of self answers + 300 directive rows, lr 1e-4, 2 epochs), dev:
+  obeyed injections 146 -> 3 of 300 (1.0%), clean accuracy 61.3% -> 66.0% (92 -> 99 of 150, p=0.17), trusted-directive
+  compliance 60.0% -> 92.7% (attack-only: 0.0%), over-defense 91.0% -> 90.5%. Passes all three gates, so the
+  main-model recipe is final. Queued `scripts/queues/m3_final.txt`: final-test (core) runs for both chosen models and the
+  attack-only Qwen ablation, userfollow (final suite) for all variants, and the input-role ablation on SmolLM2-360M.
