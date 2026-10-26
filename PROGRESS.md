@@ -143,3 +143,6 @@
   trusted-directive compliance 6.0% -> 49.3% (untrained 27.3%), loose ASR 13.7% (attempt 3: 4.3%; untrained 37.7%),
   clean accuracy 50.7% (unchanged), over-defense accuracy 90.5% (attempt 3: 88.0%, untrained 89.0%). Meets
   all three gates (D16). IFEval for this model is running. Plan: use this recipe for both models.
+- IFEval (strict prompt level) for SmolLM2-360M: untrained 29.6%, attempt 3 (attack-only) 20.5%, attempt 4
+  (with trusted-directive rows) 25.9%. The fix recovers 5.4 of the 9.1 lost points; the remaining 3.7-point gap
+  is within the interval width (~+/-3.8 points at n=541).
