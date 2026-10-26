@@ -51,6 +51,22 @@
       "generator": "hijack_proof.data.overdefense",
       "seed": 4004,
       "n": 200
+    },
+    "userfollow_dev": {
+      "sha256": "547d1b8589f9deecbb5a3b6202f142539f10aef6d49564106bc678dbcc2d0f64",
+      "items": 150,
+      "split": "dev",
+      "n": 150,
+      "seed": 6006,
+      "phrases": "train"
+    },
+    "userfollow": {
+      "sha256": "5e41cce010becb942d4043791ba23174876cf79f4104a4e08187123abcafc2e5",
+      "items": 200,
+      "split": "heldout",
+      "n": 200,
+      "seed": 5005,
+      "phrases": "eval"
     }
   }
 }

@@ -1,0 +1,8 @@
+# Test the over-generalization hypothesis, then fix it (SFT attempt 4 = attempt 3 + user-directive rows).
+hp-eval --model smollm2-360m --suite userfollow_dev --defense none --format user_inline
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-self-lr1e4/adapter --suite userfollow_dev --format input_role --tag sft360-lora-self-lr1e4
+hp-sft --model smollm2-360m --data data/generated/sft_smollm2-360m.jsonl data/generated/sft_userfollow.jsonl --run sft360-lora-uf --format input_role --target-source self,directive --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 2048 --batches-per-step 4 --warmup-steps 8
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite dev --format input_role --tag sft360-lora-uf
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite userfollow_dev --format input_role --tag sft360-lora-uf
+hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite overdefense --format input_role --tag sft360-lora-uf
+hp-ifeval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --tag sft360-lora-uf

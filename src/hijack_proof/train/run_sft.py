@@ -28,11 +28,13 @@ PAUSED = sft.PAUSED
 
 
 def load_examples(
-    path: Path, enc: ChatEncoder, max_len: int, target_source: str = "all"
+    path: Path | list[Path], enc: ChatEncoder, max_len: int, target_source: str = "all"
 ) -> tuple[list, dict]:
-    rows = [json.loads(line) for line in path.read_text().splitlines()]
-    if target_source != "all":  # e.g. "self": keep only the model's own verified answers
-        rows = [r for r in rows if r.get("target_source") == target_source]
+    paths = [path] if isinstance(path, Path) else list(path)
+    rows = [json.loads(line) for p in paths for line in p.read_text().splitlines()]
+    if target_source != "all":  # e.g. "self,directive": keep only rows with these target sources
+        allowed = set(target_source.split(","))
+        rows = [r for r in rows if r.get("target_source") in allowed]
     examples, dropped = [], 0
     for r in rows:
         ids, labels = enc.encode(Prompt(r["instruction"], r["data"]), r["response"])
@@ -44,7 +46,7 @@ def load_examples(
         "rows": len(rows), "kept": len(examples), "dropped_too_long": dropped,
         "tokens": sum(len(x) for x, _ in examples),
         "target_tokens": sum(sum(t != -100 for t in y) for _, y in examples),
-        "data_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "data_sha256": hashlib.sha256(b"".join(p.read_bytes() for p in paths)).hexdigest(),
     }  # fmt: skip
     return examples, info
 
@@ -52,7 +54,7 @@ def load_examples(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--model", required=True, help="base model folder under models/")
-    ap.add_argument("--data", required=True, type=Path)
+    ap.add_argument("--data", required=True, type=Path, nargs="+", help="one or more jsonl files")
     ap.add_argument("--run", required=True, help="run name (folder under runs/sft/)")
     ap.add_argument("--format", default="input_role", choices=["input_role", "user_inline"])
     ap.add_argument("--lora-r", type=int, default=0, help="0 = full fine-tuning")
@@ -69,8 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--target-source",
         default="all",
-        choices=["all", "self", "reference"],
-        help="train only on rows whose target came from this source",
+        help="comma-separated target sources to train on: all, self, reference, directive",
     )
     args = ap.parse_args(argv)
 
@@ -91,8 +92,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit:
         limited = out_dir / "data_limited.jsonl"
         out_dir.mkdir(parents=True, exist_ok=True)
-        limited.write_text("".join(args.data.read_text().splitlines(keepends=True)[: args.limit]))
-        args.data = limited
+        lines = [ln for p in args.data for ln in p.read_text().splitlines(keepends=True)]
+        limited.write_text("".join(lines[: args.limit]))
+        args.data = [limited]
     examples, info = load_examples(args.data, enc, args.max_len, args.target_source)
     info["target_source"] = args.target_source
     print(f"data: {info}", flush=True)
