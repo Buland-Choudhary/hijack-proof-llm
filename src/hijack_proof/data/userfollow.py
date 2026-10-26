@@ -95,6 +95,7 @@ def build_userfollow_training(n: int, seed: int) -> list[dict]:
                 "target_source": "directive",
                 "family": "user_directive",
                 "payload": kind,
+                "plain_answer": d["reference"],  # what ignoring the directive looks like
             }  # fmt: skip
         )
     return rows

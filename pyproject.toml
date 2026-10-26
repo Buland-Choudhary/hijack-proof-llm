@@ -38,6 +38,7 @@ hp-ifeval = "hijack_proof.eval.ifeval_run:main"
 hp-report = "hijack_proof.eval.report:main"
 hp-sftdata = "hijack_proof.data.build_sft:main"
 hp-sft = "hijack_proof.train.run_sft:main"
+hp-dpo = "hijack_proof.train.run_dpo:main"
 hp-charts = "hijack_proof.eval.charts:main"
 
 [tool.hatch.build.targets.wheel]
