@@ -1,0 +1,6 @@
+# Qwen3-0.6B with the attempt-4 recipe: verified self answers + trusted-directive rows (D16).
+hp-sft --model qwen3-0.6b --data data/generated/sft_qwen3-0.6b.jsonl data/generated/sft_userfollow.jsonl --run qwen06-lora-uf --format input_role --target-source self,directive --lora-r 32 --lr 1e-4 --epochs 2 --max-tokens-per-batch 1024 --batches-per-step 8 --warmup-steps 8
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --suite dev --format input_role --tag qwen06-lora-uf
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --suite userfollow_dev --format input_role --tag qwen06-lora-uf
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --suite overdefense --format input_role --tag qwen06-lora-uf
+hp-ifeval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --tag qwen06-lora-uf

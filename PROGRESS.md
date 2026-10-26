@@ -146,3 +146,7 @@
 - IFEval (strict prompt level) for SmolLM2-360M: untrained 29.6%, attempt 3 (attack-only) 20.5%, attempt 4
   (with trusted-directive rows) 25.9%. The fix recovers 5.4 of the 9.1 lost points; the remaining 3.7-point gap
   is within the interval width (~+/-3.8 points at n=541).
+- Qwen3-0.6B trusted-directive compliance (`userfollow_dev`): untrained 60.0% (canary 67, french 23, refuse 97,
+  url 57, fake answer 57), attack-only SFT (`qwen06-lora-self`) 0.0% on every payload. The over-generalization is
+  total for the main model, so the attempt-4 recipe (self answers + directive rows) is queued for Qwen3-0.6B
+  (`scripts/queues/m3_qwen_uf.txt`).
