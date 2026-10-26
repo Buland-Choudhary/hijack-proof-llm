@@ -117,3 +117,16 @@
   relative ASR drop, <=3 points clean loss), so it is the chosen SmolLM2-360M recipe: LoRA r=32, lr 1e-4,
   2 epochs, verified self answers only, input role. Next: one core evaluation + IFEval of this adapter
   (tag sft360-final), then the same recipe on Qwen3-0.6B (micro-batch 1024 tokens because of its large vocabulary).
+
+### 2026-10-26, final-test result and IFEval finding for SmolLM2-360M
+- Core (frozen final test), chosen 360M recipe (`sft360-lora-self-lr1e4`, tag sft360-final): loose ASR 44.4% ->
+  11.3% (held-out families 33.0% -> 8.7%), clean accuracy 41.3% -> 43.3%, task accuracy under attack 21.7% ->
+  38.2%. Weakest payload: fake answer (36% obeyed).
+- IFEval (strict prompt level): 29.6% -> 20.5% (-9.1 points), over the 3-point target. Per instruction type
+  (strict, base -> trained): language 23 -> 4 of 31, detectable_format 111 -> 86 of 157, keywords 70 -> 56 of 163,
+  length constraints unchanged. Response length is unchanged (150 vs 147 words), so this is not shorter answers.
+- Explanation: training only showed injected directives being ignored (including "answer in French" style
+  payloads), and the model over-generalized to ignoring such directives when the TRUSTED user asks for them.
+  Fix to try (attempt 4, one-directional training was the flaw): add contrastive training rows where the same
+  kinds of directives sit in the user turn and the model obeys them, and add a `userfollow` eval suite that
+  measures obedience to trusted user directives.

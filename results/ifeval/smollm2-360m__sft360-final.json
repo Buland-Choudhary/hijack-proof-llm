@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "adapter": "runs/sft/sft360-lora-self-lr1e4/adapter",
+    "gguf": null,
+    "git_sha": "d058b34",
+    "limit": null,
+    "max_new_tokens": 320,
+    "model": "smollm2-360m",
+    "prompts": 541,
+    "seconds": 1229.6
+  },
+  "summary": {
+    "instruction_loose": {
+      "hi": 0.3908872901678657,
+      "lo": 0.3273381294964029,
+      "mean": 0.35731414868105515,
+      "n": 834
+    },
+    "instruction_strict": {
+      "hi": 0.3597122302158273,
+      "lo": 0.2973621103117506,
+      "mean": 0.3273381294964029,
+      "n": 834
+    },
+    "prompt_loose": {
+      "hi": 0.2587800369685767,
+      "lo": 0.1866913123844732,
+      "mean": 0.22181146025878004,
+      "n": 541
+    },
+    "prompt_strict": {
+      "hi": 0.24029574861367836,
+      "lo": 0.17190388170055454,
+      "mean": 0.20517560073937152,
+      "n": 541
+    }
+  }
+}
