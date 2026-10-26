@@ -130,3 +130,8 @@
   Fix to try (attempt 4, one-directional training was the flaw): add contrastive training rows where the same
   kinds of directives sit in the user turn and the model obeys them, and add a `userfollow` eval suite that
   measures obedience to trusted user directives.
+- Qwen3-0.6B SFT (`qwen06-lora-self`: LoRA r=32, lr 1e-4, 2 epochs, verified self answers only, input role,
+  micro-batch 1024 tokens): loss 0.317 -> 0.114. Dev: obeyed injections 146 -> 1 of 300 (0.3%), clean accuracy
+  61.3% -> 64.0% (92 -> 96 of 150, McNemar p=0.48), over-defense accuracy 91.0% -> 90.5%. Passes all dev gates
+  on the first attempt. Final-test evaluation waits for the userfollow/IFEval diagnostics (queue
+  `scripts/queues/m3_userfollow.txt`).

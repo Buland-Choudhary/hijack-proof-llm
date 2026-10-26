@@ -6,3 +6,7 @@ hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite d
 hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite userfollow_dev --format input_role --tag sft360-lora-uf
 hp-eval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --suite overdefense --format input_role --tag sft360-lora-uf
 hp-ifeval --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --tag sft360-lora-uf
+# Same diagnostics for Qwen3-0.6B: base vs trained compliance with trusted directives, and IFEval.
+hp-eval --model qwen3-0.6b --suite userfollow_dev --defense none --format user_inline
+hp-eval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-self/adapter --suite userfollow_dev --format input_role --tag qwen06-lora-self
+hp-ifeval --model qwen3-0.6b --adapter runs/sft/qwen06-lora-self/adapter --tag qwen06-lora-self
