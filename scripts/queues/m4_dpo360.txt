@@ -1,0 +1,5 @@
+# M4 DPO on the SmolLM2-360M SFT adapter (lr 2e-5, beta 0.1), evaluated on the dev split only.
+hp-dpo --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --sft-data data/generated/sft_smollm2-360m.jsonl --run dpo360-b01 --beta 0.1 --lr 2e-5 --ckpt-minutes 3
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-b01/adapter --suite dev --format input_role --tag dpo360-b01
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-b01/adapter --suite userfollow_dev --format input_role --tag dpo360-b01
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-b01/adapter --suite overdefense --format input_role --tag dpo360-b01
