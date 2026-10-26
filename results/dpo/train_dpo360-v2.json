@@ -1,0 +1,47 @@
+{
+  "run": "dpo360-v2",
+  "base": "smollm2-360m",
+  "start_adapter": "runs/sft/sft360-lora-uf/adapter",
+  "config": {
+    "beta": 0.1,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "pairs_per_step": 16,
+    "micro_pairs": 2,
+    "warmup_steps": 5,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "sft_weight": 0.2,
+    "seed": 0,
+    "ckpt_minutes": 3.0,
+    "log_every": 2,
+    "max_rss_gb": 11.0
+  },
+  "data": {
+    "pairs": 2354,
+    "dropped_too_long": 0,
+    "injection": 1454,
+    "directive": 900,
+    "sft_data_sha256": "29d7c14fed3769d2b8160f9e25247774160823a318361ee409599fa9df1ac482"
+  },
+  "steps": 148,
+  "first": {
+    "step": 1,
+    "loss": 0.8272,
+    "margin": 0.00118,
+    "acc": 0.25,
+    "lr": 2.0000000000000003e-06,
+    "grad_norm": 1.073164939880371,
+    "seconds": 23.4
+  },
+  "final": {
+    "step": 148,
+    "loss": 0.5972,
+    "margin": 0.34904,
+    "acc": 1.0,
+    "lr": 1.0010859072207938e-06,
+    "grad_norm": 2.5378267765045166,
+    "seconds": 645.5
+  },
+  "train_seconds": 645.5
+}

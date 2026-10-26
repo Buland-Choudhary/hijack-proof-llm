@@ -204,3 +204,19 @@ beta 0.1, lr 2e-5, 1 epoch, 110 steps (`results/dpo/train_dpo360-b01.json`).
 DPO cuts attack success a lot but over-generalizes: it now ignores more trusted directives and does
 worse on the over-defense suite. Fix to try next: more directive pairs, an NLL term on the chosen
 response (RPO), lower lr. Not tuned on core or any frozen test set.
+
+## M4 DPO, variant 2 (SmolLM2-360M, dev split only)
+Run `dpo360-v2`: 1,400 injection + 900 directive pairs, beta 0.1, lr 1e-5, RPO NLL weight 0.2, 148 steps
+(`results/dpo/train_dpo360-v2.json`; queue `scripts/queues/m4_dpo360_v2.txt`).
+
+| Dev metric | SFT | DPO v1 | DPO v2 |
+|---|---|---|---|
+| Attack success (loose) | 13.7% (10.0-17.7) | 2.0% (0.7-3.7) | 7.0% (4.3-10.0) |
+| Clean accuracy | 50.7% (42.7-58.7) | 50.7% (42.7-58.7) | 46.7% (38.7-54.7) |
+| Trusted-directive compliance | 49.3% (41.3-57.3) | 25.3% (18.7-32.0) | 57.3% (49.3-65.3) |
+| Over-defense accuracy | 90.5% (86.0-94.5) | 75.5% (69.5-81.5) | 83.5% (78.0-88.5) |
+
+v2 halves attack success relative to SFT and raises directive compliance, but costs 4.0 points of clean
+accuracy (the D16 gate allows 3, though the intervals overlap) and 7 points on over-defense. DPO v1 is
+the stronger attack defense but breaks the hierarchy. Neither is tuned on core. Next: run the v2 recipe on
+Qwen3-0.6B, then pick one 360M recipe on dev before any frozen-test run.

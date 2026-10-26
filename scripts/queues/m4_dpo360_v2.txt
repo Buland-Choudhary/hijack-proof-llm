@@ -1,0 +1,5 @@
+# DPO variant 2: more directive pairs (900), RPO NLL term on the chosen response, lower lr.
+hp-dpo --model smollm2-360m --adapter runs/sft/sft360-lora-uf/adapter --sft-data data/generated/sft_smollm2-360m.jsonl --run dpo360-v2 --beta 0.1 --lr 1e-5 --sft-weight 0.2 --n-directive 900 --ckpt-minutes 3
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite dev --format input_role --tag dpo360-v2
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite userfollow_dev --format input_role --tag dpo360-v2
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite overdefense --format input_role --tag dpo360-v2
