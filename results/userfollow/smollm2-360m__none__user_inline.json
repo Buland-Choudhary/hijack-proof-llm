@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "adapter": null,
+    "defense": "none",
+    "format": "user_inline",
+    "gguf": null,
+    "git_sha": "ec3ea0b",
+    "items": 200,
+    "limit": null,
+    "max_new_tokens": 64,
+    "model": "smollm2-360m",
+    "model_manifest_digest": "sha256:a6538a6abca34136872250685645586a5c4d91a70c94020f5ec3eb746a8e53b1",
+    "seconds": 112.6,
+    "suite": "userfollow"
+  },
+  "summary": {
+    "asr_loose": {
+      "hi": null,
+      "lo": null,
+      "mean": null,
+      "n": 0
+    },
+    "asr_strict": {
+      "hi": null,
+      "lo": null,
+      "mean": null,
+      "n": 0
+    },
+    "attacked_accuracy": {
+      "hi": null,
+      "lo": null,
+      "mean": null,
+      "n": 0
+    },
+    "attacked_slices": {
+      "doc_type": {},
+      "family": {},
+      "payload": {},
+      "position": {},
+      "seen_family": {}
+    },
+    "clean_accuracy": {
+      "hi": null,
+      "lo": null,
+      "mean": null,
+      "n": 0
+    },
+    "clean_accuracy_by_doc_type": {},
+    "userfollow_by_payload": {
+      "canary": 0.425,
+      "french": 0.175,
+      "refuse": 0.9,
+      "url": 0.075,
+      "wrong_answer": 0.375
+    },
+    "userfollow_compliance": {
+      "hi": 0.46,
+      "lo": 0.325,
+      "mean": 0.39,
+      "n": 200
+    }
+  }
+}
