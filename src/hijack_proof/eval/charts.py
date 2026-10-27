@@ -162,12 +162,55 @@ def asr_by_family(results: dict, out: Path) -> None:
     plt.close(fig)
 
 
+TRAINED = [  # (result file in results/core, label, trained?)
+    ("qwen3-0.6b__none__user_inline.json", "Qwen3-0.6B\nuntrained", False),
+    ("qwen3-0.6b__none__input_role__qwen06-uf-final.json", "Qwen3-0.6B\n+ SFT", True),
+    ("smollm2-360m__none__user_inline.json", "SmolLM2-360M\nuntrained", False),
+    ("smollm2-360m__none__input_role__sft360-uf-final.json", "SmolLM2-360M\n+ SFT", True),
+    ("smollm2-360m__none__input_role__dpo360-v2-final.json", "SmolLM2-360M\n+ SFT + DPO", True),
+]
+
+
+def asr_trained(out: Path, core_dir: Path = Path("results/core")) -> None:
+    """Attack success before and after training (final test), one bar per model setup."""
+    fig, ax = plt.subplots(figsize=(8.5, 4.4), dpi=200, facecolor=SURFACE)
+    _style(ax)
+    for i, (name, label, trained) in enumerate(TRAINED):
+        m = json.loads((core_dir / name).read_text())["summary"]["asr_loose"]
+        y = i + (0.35 if i >= 2 else 0)
+        ax.barh(y, 100 * m["mean"], height=0.6, color=ORANGE if trained else BLUE, zorder=2)
+        lo, hi = 100 * (m["mean"] - m["lo"]), 100 * (m["hi"] - m["mean"])
+        ax.errorbar(100 * m["mean"], y, xerr=[[lo], [hi]], color=INK2, capsize=2.5, lw=1, zorder=3)
+        ax.text(
+            100 * m["hi"] + 1.2, y, f"{100 * m['mean']:.1f}%", va="center", color=INK, fontsize=9
+        )
+        ax.text(-1.5, y, label, va="center", ha="right", color=INK, fontsize=9)
+    ax.set_yticks([])
+    ax.invert_yaxis()
+    ax.set_xlim(0, 60)
+    ax.xaxis.grid(True, color=GRID, lw=0.8, zorder=0)
+    ax.set_axisbelow(True)
+    ax.set_xticks(range(0, 61, 20))
+    ax.set_xticklabels([f"{t}%" for t in range(0, 61, 20)], color=INK2, fontsize=9)
+    handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in (BLUE, ORANGE)]
+    ax.legend(handles, ["untrained", "trained here"], loc="lower right", frameon=False,
+              fontsize=9, labelcolor=INK2)  # fmt: skip
+    fig.subplots_adjust(left=0.23, top=0.8)
+    fig.suptitle("Training cuts attack success from about 45% to 4% on Qwen3-0.6B",
+                 x=0.02, ha="left", color=INK, fontsize=13, fontweight="bold")  # fmt: skip
+    fig.text(0.02, 0.88, "Share of attacked prompts where the model obeyed the hidden text "
+             "(final test set, 95% interval)", color=INK2, fontsize=9)  # fmt: skip
+    fig.savefig(out, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> int:
     results = load()
     out_dir = Path("results/baselines")
     out_dir.mkdir(parents=True, exist_ok=True)
     asr_by_model(results, out_dir / "asr_by_model.png")
     asr_by_family(results, out_dir / "asr_by_family.png")
+    asr_trained(out_dir / "asr_trained.png")
     print(f"wrote charts to {out_dir}")
     return 0
 

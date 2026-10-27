@@ -461,16 +461,16 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] SFT trainer core: response-only loss, length-bucketed batches (instead of packing, no attention leakage), grad accumulation, cosine schedule, bf16 autocast, atomic checkpoints with exact resume, clean pause (tested)
 - [x] SFT command-line runner `hp-sft` (LoRA / full fine-tune, resumable), run logging to metrics.jsonl (MLflow still optional)
 - [x] Training-data builder `hp-sftdata`: TaskForge train split (clean + train-only attacks) + general instructions; verified self-generated targets with reference-answer fallback (code and tests done; generation per model still to run)
-- [ ] Train/eval 8-gram overlap report committed
+- [x] Train/eval 8-gram overlap report committed (`scripts/overlap_report.py`)
 - [x] Over-defense suite (200 harmless-instruction documents: how-to guides, email requests, recipes, notices), frozen as an addition to eval v2 (`evalsets/v2/overdefense.jsonl`)
-- [ ] Runs: 360M full fine-tune, 360M LoRA, 0.6B LoRA; ablations (input role vs inline, mix ratio)
-- [ ] Results, design note M3
+- [x] Runs: 360M LoRA, 0.6B LoRA, input role vs inline (not run: 360M full fine-tune, mix-ratio ablation)
+- [x] Results, design note M3 (`docs/notes/M3-M4-training-design.md`)
 
 *Done when:* the Stage 1 gate is met or the outcome is documented.
 
 **M4: DPO**
-- [ ] DPO trainer + cached reference log-probs + unit tests against reference formulas
-- [ ] Pair builder; runs; β and pipeline ablations; results; design note M4
+- [x] DPO trainer + cached reference log-probs + unit tests
+- [x] Pair builder; runs; results; design note M4 (not run: β sweep, DPO-only ablation)
 
 **M8: Ship**
 - [x] Merge → GGUF → Q8_0/Q4_K_M; evaluation after quantization (Qwen3-0.6B SFT; 360M models not quantized)
@@ -479,9 +479,9 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 *Done when:* `docker run` gives a working demo.
 
 **M9: Write-up → `v1.0`**
-- [ ] README: problem, results table, charts, demo, how to reproduce
-- [ ] `docs/report.md`: method, all ablations, limitations, negative results
-- [ ] Model card, data card; design notes complete ("explain it in 2 minutes" section)
+- [x] README: problem, results table, charts, demo, how to reproduce (demo GIF TBD)
+- [x] `docs/report.md`: method, ablations run, limitations, negative results
+- [x] Model card, data card; design notes (M2, M3-M4)
 - [ ] Tag `v1.0`
 
 ### Tier 2 (after `v1.0`)
@@ -587,6 +587,7 @@ Disk: ~15 GB free after models, environments and builds.
 | D14 | 2026-10-25 | SecAlign protocol and IFEval are required before training; BIPIA and Tensor Trust become optional (Tier 2) | comparability with published work and general usefulness matter most; the others cost time |
 | D15 | 2026-10-25 | The SecAlign-style suite uses a seeded held-out sample of Alpaca-cleaned (208 prompts with inputs, 4 standard attack types, canary payload at the end of the input) instead of the AlpacaFarm prompts. It measures ASR only, and numbers are not directly comparable with published ones. Its rows are excluded from training. | the AlpacaFarm prompts are only on Hugging Face (blocked in the cloud); AlpacaEval's GitHub copy has the input merged into the instruction |
 | D16 | 2026-10-26 | Add a third SFT gate: compliance with trusted user directives (`userfollow_dev`, new suite) must be at least the untrained model's. Training data gets contrastive rows where the user asks for payload-style directives and the model obeys (`sft_userfollow.jsonl`, deterministic targets). | IFEval fell 29.6% -> 20.5% for the attack-only SmolLM2-360M; `userfollow_dev` showed compliance 27.3% -> 6.0%: attack-only training over-generalizes to ignoring the trusted user. Found after the original gates were set, so recorded as an amendment, not a silent change. |
+| D17 | 2026-10-27 | DPO gate result: DPO is kept for SmolLM2-360M (final test 29.4% -> 20.0% attack success, clean accuracy unchanged) and rejected for Qwen3-0.6B, which ships the SFT adapter. Qwen DPO tuning stopped after two variants; the β sweep and DPO-only ablation were not run. | On the dev split Qwen's SFT adapter was already at 1.0% attack success; both DPO variants cost 9-11 points of clean accuracy. The plan's Stage 2 gate says to document such a result as an ablation. Credits and time went to shipping Tier 1. |
 
 ## 15. Working agreement
 
