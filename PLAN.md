@@ -482,7 +482,7 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] README: problem, results table, charts, demo, how to reproduce (demo GIF TBD)
 - [x] `docs/report.md`: method, ablations run, limitations, negative results
 - [x] Model card, data card; design notes (M2, M3-M4)
-- [ ] Tag `v1.0`
+- [x] Tag `v1.0`
 
 ### Tier 2 (after `v1.0`)
 

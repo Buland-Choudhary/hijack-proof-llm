@@ -274,3 +274,10 @@ Next: Gradio demo, Dockerfile, GGUF/quantization for the 360M models (optional),
 served (HTTP 200) and both a clean and an injected invoice returned "$113". `Dockerfile` written but NOT built
 here (the image build needs a long llama.cpp compile); the README says so. Demo GIF: TBD (needs a browser
 recording). Next: model and data cards, docs/report.md, final README polish, tag v1.0.
+
+## v1.0 tagged (Tier 1 complete)
+M0-M4, M8, M9 done: benchmark, baselines, SFT and DPO defenses, quantized + served Qwen3-0.6B, demo, report,
+cards. Open items (not blockers): demo GIF, Dockerfile build test, 360M quantization, DPO beta sweep and DPO-only
+ablation, mix-ratio ablation. CI lesson: run `ruff check .` on the whole repo (not just src/tests) before pushing
+- five consecutive CI runs failed on one long docstring line in `scripts/overlap_report.py`, fixed in the next commit.
+Next (Tier 2, in plan order): M5 GRPO, M6 red teaming, M7 agents.
