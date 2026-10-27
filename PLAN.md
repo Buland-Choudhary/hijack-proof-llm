@@ -493,11 +493,11 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 
 **M6: Red-teaming loop**
 - [x] Attacker environment and reward; attacker GRPO; round steps are resumable queues (no single orchestrator)
-- [~] 1 round (not 3); attack gallery and design note M6 done; arms-race chart and transfer test not done
+- [x] 1 round (not 3); attack gallery and design note M6 done; arms-race chart and transfer test not done
 
 **M7: Agents**
-- [ ] Simulated tool environment + tasks + injected tool outputs + state-based checkers
-- [ ] Training on tool traces; agent ASR/usefulness table; InjecAgent subset; design note M7
+- [x] Simulated tool environment + tasks + injected tool outputs + state-based checkers
+- [x] Training on tool traces; agent ASR/usefulness table; design note M7 (InjecAgent subset not run)
 
 **M10 (optional): GPU scale-up and extras**
 - The same scripts on Colab or a local GPU for Qwen3-1.7B/4B.

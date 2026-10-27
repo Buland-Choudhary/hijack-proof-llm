@@ -362,3 +362,11 @@ Next: fresh-seed attacks against D0 and D1 (clean comparison), then decide wheth
 Fresh seed 13 (never used for training): attacker 1 vs D0 6.25% (16/256), vs D1 5.5% (14/256). Results,
 gallery and note: `results/redteam/`, `docs/notes/M6-redteam.md`. Decision: stop at one round (cost, and the
 attacker mostly plants fake answers rather than finding new attack styles); noted in the README. Next: M7 agents.
+
+## M7 agents (done, small)
+`agents/env.py`, `agents/tasks.py`, `agents/rollout.py` (multi-turn `AgentEncoder`, lockstep episode runner), `agents/run_agent.py`
+(`hp-agent eval|sft`); 11 tests. Results in `results/agents/`, note `docs/notes/M7-agents.md`: Qwen3-0.6B agent trained on clean files only is
+hijacked 65.6% (55.6-74.4) on held-out attacks; trained with injected files 0.0%, task success 100% in both. Untrained model cannot
+use the tools. Ops: this CPU has no fast bf16, so `hw.py` now falls back to fp32 (4x faster matmuls here); the agent SFT used fp32.
+Earlier results used bf16 on an AMX CPU; numeric differences are small but the two regimes are not bit-identical.
+Next: final README/report pass for Tier 2, update the report with GRPO/M6/M7 sections, refresh model card.
