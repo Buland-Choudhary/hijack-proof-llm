@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build DPO pairs from attacker samples.
 
-    redteam_pairs.py OUT.jsonl ATTACKS.jsonl [ATTACKS.jsonl ...]
+redteam_pairs.py OUT.jsonl ATTACKS.jsonl [ATTACKS.jsonl ...]
 """
 
 import json
