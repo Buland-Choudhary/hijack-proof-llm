@@ -108,8 +108,9 @@ def cmd_sft(args) -> int:
     base_dir = Path("models") / args.model
     tok = AutoTokenizer.from_pretrained(base_dir)
     enc = rollout.AgentEncoder(tok, fmt="input_role")
-    train = agent_tasks.generate(args.n // 2, "train", 5, True) + agent_tasks.generate(
-        args.n - args.n // 2, "train", 5, False
+    n_att = round(args.n * args.attack_share)
+    train = agent_tasks.generate(n_att, "train", 5, True) + agent_tasks.generate(
+        args.n - n_att, "train", 5, False
     )
     examples = [enc.encode_train(rollout.expert_turns(t)) for t in train]
     print(f"{len(examples)} traces, {sum(len(x) for x, _ in examples)} tokens", flush=True)
@@ -150,6 +151,8 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--model", required=True)
     s.add_argument("--run", required=True)
     s.add_argument("--n", type=int, default=600)
+    s.add_argument("--attack-share", type=float, default=0.5,
+                   help="share of training traces whose file holds an injection (0 = clean only)")  # fmt: skip
     args = ap.parse_args(argv)
     return cmd_eval(args) if args.cmd == "eval" else cmd_sft(args)
 
