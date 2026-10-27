@@ -120,7 +120,7 @@ def cmd_sft(args) -> int:
     lora = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.0, target_modules="all-linear",
                       task_type="CAUSAL_LM")  # fmt: skip
     model = get_peft_model(model, lora)
-    cfg = sft.SFTConfig(lr=1e-4, epochs=2.0, max_tokens_per_batch=2048, batches_per_step=4,
+    cfg = sft.SFTConfig(lr=1e-4, epochs=2.0, max_tokens_per_batch=1024, batches_per_step=8,
                         warmup_steps=5, ckpt_minutes=3.0)  # fmt: skip
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
     t0 = time.time()
