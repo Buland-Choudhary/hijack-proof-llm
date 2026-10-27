@@ -20,3 +20,6 @@ frozen test; SmolLM2-360M + SFT + DPO: 20.0% (17.3-22.6) vs 44.4%.
 
 **Known limitations:** lower IFEval score than the base model (Qwen 47.3 vs 54.9, 360M 25.9 vs 29.6); synthetic
 benchmark; scripted attacks only; English; single seed. Base-model licenses apply to the adapters.
+
+Also trained: SmolLM2-360M SFT+DPO+GRPO adapter (frozen test attack success 15.1%, trusted-directive
+compliance 75.5%), and Qwen3-0.6B agent adapters (small synthetic tool environment, see the M7 note).

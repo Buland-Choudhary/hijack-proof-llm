@@ -69,6 +69,17 @@ for clean accuracy and over-defense). Qwen3-0.6B was not run (CPU cost, little s
 [M5 note](notes/M5-grpo.md)); no KL or group-size ablation. IFEval was not re-run for the DPO/GRPO models,
 so their usefulness cost on instruction following is unmeasured.
 
+### 5c. Red teaming, one round (SmolLM2-360M defender)
+An attacker model trained with GRPO to hijack the defender reaches 6-10% success on fresh attempts (untrained:
+3.9%), mostly by planting a fake answer in the document. Retraining the defender on what it found lowered attack
+success on the fixed test from 15.3% to 11.2% but not measurably on fresh attacker samples (14 vs 16 hijacks of
+256). One round only, no arms-race curve, no transfer test. See [M6 note](notes/M6-redteam.md).
+
+### 5d. Tool-using agent (Qwen3-0.6B, small synthetic environment)
+Two agents trained on expert tool traces, with and without injected files: attack success 65.6% (55.6-74.4) vs
+0.0% on held-out attack styles, task success 100% for both on clean files. The environment is templated and
+tiny; this is a controlled comparison, not a result on real agent benchmarks. See [M7 note](notes/M7-agents.md).
+
 ## 6. Quantization
 Merged and converted to GGUF, re-evaluated on the same frozen test through llama.cpp: Q8_0 (639 MB) 3.7%
 attack success / 60.2% clean; Q4_K_M (397 MB) 4.6% / 58.4%. The defense survives 4-bit quantization within
@@ -85,6 +96,8 @@ the intervals.
 - Qwen's "trusted directive" score on the final suite (73.0%) is well below its dev score (92.7%): the
   trusted-directive behavior generalizes to new phrasings less well than attack resistance does.
 - Only the Qwen SFT model was quantized and served; the 360M models were not.
+- Numerics: early runs used bf16 on a CPU with AMX; after the cloud machine changed, runs used fp32 (this CPU has
+  no fast bf16). Differences are small but the regimes are not bit-identical.
 - GRPO was run once (one seed) on the 360M model only.
 
 ## 8. Reproduce
