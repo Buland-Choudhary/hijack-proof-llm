@@ -63,7 +63,44 @@ generation setup (answers capped at 320 tokens), so compare only with the other 
 wrongly blocks 9.3% of clean documents. It blocks instead of answering, which is a different
 trade-off from a model that answers correctly despite the attack.
 
-**Next:** train the defense (SFT, then DPO) and compare against these baselines.
+## Results: trained defenses (milestones M3-M4)
+
+Same frozen final test as above (1,350 items, 4 attack styles held out from training). The defended
+models use the secure chat format (the document goes in a separate `input` role) and a LoRA adapter
+trained from scratch in PyTorch: SFT on the model's own verified answers, plus "trusted-directive" rows so
+it still obeys the *user* when the user asks for the same kind of thing. "Obeys injection" is attack
+success (lower is better); "Trusted directive" is how often the model obeys the same kind of instruction
+when the user writes it (higher is better).
+
+| Model (final test set) | Clean accuracy | Obeys injection | Trusted directive | IFEval (strict) |
+|---|---|---|---|---|
+| Qwen3-0.6B, untrained | 57.6% | 45.3% (42.1-48.6) | 67.0% | 54.9% |
+| Qwen3-0.6B + SFT | 60.9% (56.2-65.3) | **3.9% (2.7-5.2)** | 73.0% | 47.3% |
+| SmolLM2-360M, untrained | 41.3% | 44.4% (41.2-47.8) | 39.0% | 29.6% |
+| SmolLM2-360M + SFT | 42.7% (38.2-47.1) | 29.4% (26.4-32.3) | 50.0% | 25.9% |
+| SmolLM2-360M + SFT + DPO | 42.7% (38.2-47.1) | 20.0% (17.3-22.6) | 54.0% | not run |
+
+- **Qwen3-0.6B goes from hijacked 45% of the time to under 4%** with clean accuracy in the same range
+  (57.6% to 60.9%, intervals overlap). The four attack styles never seen in training are held at 3.0%,
+  versus 4.3% on the seen styles.
+- **The smaller SmolLM2-360M learns the defense only partly.** SFT cuts attack success from 44% to 29%;
+  adding DPO takes it to 20% with the same clean accuracy (the intervals do not overlap).
+- **There is a price.** IFEval drops 7.6 points for Qwen and 3.7 for the 360M model: the adapters make the
+  models somewhat worse at following format constraints. On an over-defense suite (ordinary documents that
+  merely contain instruction-like text) SFT stays at 90.5% for Qwen but DPO on the 360M model lowers it from
+  90.5% to 83.5%.
+- **DPO did not help Qwen.** On the dev split Qwen's SFT adapter was already at 1% attack success; two DPO
+  variants reached 0-0.3% but cost 9-11 points of clean accuracy, so the Qwen result above is SFT only. The
+  runs are in [`PROGRESS.md`](PROGRESS.md).
+- The input-role format beat inline placement on the 360M model on the dev split (13.7% vs 17.7% attack
+  success), but the intervals overlap, so treat it as a trend.
+
+Files: [`results/core/`](results/core/), [`results/userfollow/`](results/userfollow/),
+[`results/overdefense/`](results/overdefense/), [`results/ifeval/`](results/ifeval/),
+[`results/dpo/`](results/dpo/) and [`results/sft/`](results/sft/).
+
+**Next:** quantize the models (GGUF) and re-measure, a small server and demo, then the write-up. GRPO, an
+AI-vs-AI red-team loop and tool-using agents come after v1.0.
 
 ## License
 Code: MIT. Models and datasets keep their original licenses (see the model and data cards once

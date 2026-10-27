@@ -249,7 +249,14 @@ Run `dpoqwen-v3` (`results/dpo/train_dpoqwen-v3.json`).
 | Over-defense accuracy | 90.5% | 82.0% | 80.5% (74.5-85.5) |
 
 The stronger NLL anchor and lower lr did not recover the lost accuracy. DPO as built here does not improve
-Qwen3-0.6B: attack success is already ~1% after SFT and DPO trades 9-10 points of clean accuracy for it.
+Qwen3-0.6B: attack success is already ~1% after SFT and DPO trades 9-11 points of clean accuracy for it.
 Decision: Qwen ships the SFT adapter; DPO is reported as a negative result on Qwen. Stopping DPO tuning
 there (credits). For SmolLM2-360M, where SFT leaves 13.7% attack success on dev, DPO v2 is run once on the
 frozen test as the "SFT + DPO" row, reported alongside SFT whatever the outcome.
+
+## M4 final test: SmolLM2-360M SFT + DPO v2 (frozen test, recipe fixed on dev beforehand)
+Files: `results/core|userfollow|overdefense/smollm2-360m__none__input_role__dpo360-v2-final.json`.
+Attack success 29.4% (26.4-32.3) -> 20.0% (17.3-22.6); clean accuracy unchanged 42.7%; accuracy under attack
+31.6% -> 35.7%; trusted-directive compliance 50.0% -> 54.0%; over-defense 90.5% -> 83.5%.
+README updated with the trained-defense table. Next: M8 (merge adapters, GGUF, re-evaluate quantized models,
+server/demo), then M9 write-up and tag v1.0. Not yet done: 8-gram train/eval overlap report.

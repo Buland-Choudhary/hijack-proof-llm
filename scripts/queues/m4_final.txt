@@ -1,0 +1,4 @@
+# Final test for SmolLM2-360M SFT + DPO v2 (recipe fixed on dev beforehand).
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite core --format input_role --tag dpo360-v2-final
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite userfollow --format input_role --tag dpo360-v2-final
+hp-eval --model smollm2-360m --adapter runs/dpo/dpo360-v2/adapter --suite overdefense --format input_role --tag dpo360-v2-final
