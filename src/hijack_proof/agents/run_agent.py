@@ -21,6 +21,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.agents import rollout
 from hijack_proof.agents import tasks as agent_tasks
 from hijack_proof.attacks import library as lib
@@ -115,7 +116,7 @@ def cmd_sft(args) -> int:
     examples = [enc.encode_train(rollout.expert_turns(t)) for t in train]
     print(f"{len(examples)} traces, {sum(len(x) for x, _ in examples)} tokens", flush=True)
     torch.manual_seed(0)
-    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=hw.compute_dtype())
     lora = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.0, target_modules="all-linear",
                       task_type="CAUSAL_LM")  # fmt: skip
     model = get_peft_model(model, lora)

@@ -18,6 +18,7 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+from hijack_proof import hw
 from hijack_proof.attacks.library import build_training_attacks
 from hijack_proof.data import taskforge as tf
 
@@ -55,7 +56,7 @@ def train(tok, model, texts, labels, epochs=1, lr=2e-5, batch_size=8, max_len=51
             enc = tok(texts[i : i + batch_size], return_tensors="pt", padding=True,
                       truncation=True, max_length=max_len)  # fmt: skip
             y = torch.tensor(labels[i : i + batch_size])
-            with torch.autocast("cpu", dtype=torch.bfloat16):
+            with hw.autocast():
                 logits = model(**enc).logits
             loss = torch.nn.functional.cross_entropy(logits.float(), y)
             loss.backward()
@@ -78,7 +79,7 @@ def predict(tok, model, texts, batch_size=16, max_len=512) -> list[float]:
         idx = order[i : i + batch_size]
         enc = tok([texts[j] for j in idx], return_tensors="pt", padding=True,
                   truncation=True, max_length=max_len)  # fmt: skip
-        with torch.autocast("cpu", dtype=torch.bfloat16):
+        with hw.autocast():
             logits = model(**enc).logits
         p = torch.softmax(logits.float(), dim=-1)[:, 1].tolist()
         for j, pj in zip(idx, p, strict=True):

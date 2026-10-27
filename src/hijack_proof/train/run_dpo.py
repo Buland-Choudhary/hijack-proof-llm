@@ -21,6 +21,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.chat import ChatEncoder, Prompt
 from hijack_proof.data import dpo_data
 from hijack_proof.train import dpo, sft
@@ -106,7 +107,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"data: {info}", flush=True)
 
     torch.manual_seed(args.seed)
-    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=hw.compute_dtype())
     model = PeftModel.from_pretrained(model, args.adapter, is_trainable=True)
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
     t0 = time.time()

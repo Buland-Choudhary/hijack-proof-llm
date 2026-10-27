@@ -27,6 +27,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.train import rewards as rw
 from hijack_proof.train import sft
 
@@ -62,7 +63,7 @@ def group_advantages(group_rewards: list[list[float]]) -> list[list[float]]:
 
 def token_logps(model, ids: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     """Per-token log-prob of each next token: [B, T-1] (position t scores token t+1)."""
-    with torch.autocast("cpu", dtype=torch.bfloat16):
+    with hw.autocast():
         logits = model(input_ids=ids, attention_mask=mask).logits
     logits = logits[:, :-1].float()
     return torch.log_softmax(logits, dim=-1).gather(-1, ids[:, 1:].unsqueeze(-1)).squeeze(-1)
@@ -94,7 +95,7 @@ def sample_rollouts(
         ids[row, width - len(p) :] = torch.tensor(p)
         mask[row, width - len(p) :] = 1
     torch.manual_seed(seed)
-    with torch.autocast("cpu", dtype=torch.bfloat16):
+    with hw.autocast():
         out = model.generate(
             input_ids=ids, attention_mask=mask, max_new_tokens=cfg.max_new_tokens,
             do_sample=True, temperature=cfg.temperature, top_p=1.0, top_k=0,

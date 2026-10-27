@@ -27,6 +27,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
+from hijack_proof import hw
 from hijack_proof.chat import IGNORE_INDEX
 from hijack_proof.train import sft
 
@@ -52,7 +53,7 @@ class DPOConfig:
 
 def sequence_logps(model, batch: dict[str, torch.Tensor]) -> torch.Tensor:
     """Sum of next-token log-probs over the labelled (response) positions of each sequence: [B]."""
-    with torch.autocast("cpu", dtype=torch.bfloat16):
+    with hw.autocast():
         logits = model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"]).logits
     logits = logits[:, :-1].float()
     labels = batch["labels"][:, 1:]

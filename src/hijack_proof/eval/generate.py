@@ -8,6 +8,8 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
+
 
 class HFGenerator:
     """Greedy batched generation with a Hugging Face causal LM (CPU bf16 by default)."""
@@ -16,13 +18,13 @@ class HFGenerator:
         self,
         model_dir: str | Path,
         batch_size: int = 16,
-        dtype: torch.dtype = torch.bfloat16,
+        dtype: torch.dtype | None = None,
         adapter_dir: str | Path | None = None,
     ):
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_dir, dtype=dtype)
+        model = AutoModelForCausalLM.from_pretrained(model_dir, dtype=dtype or hw.compute_dtype())
         if adapter_dir is not None:
             from peft import PeftModel
 

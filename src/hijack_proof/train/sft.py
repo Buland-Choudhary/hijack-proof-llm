@@ -27,6 +27,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.chat import IGNORE_INDEX
 
 PAUSED = 3
@@ -199,7 +200,7 @@ def train(
         total_loss = 0.0
         for batch in micro:
             data = collate(examples, batch, pad_id)
-            with torch.autocast("cpu", dtype=torch.bfloat16):
+            with hw.autocast():
                 logits = model(
                     input_ids=data["input_ids"], attention_mask=data["attention_mask"]
                 ).logits

@@ -21,6 +21,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.chat import ChatEncoder, Prompt
 from hijack_proof.train import sft
 
@@ -102,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
     torch.manual_seed(args.seed)
     full = args.lora_r == 0
     model = AutoModelForCausalLM.from_pretrained(
-        base_dir, dtype=torch.float32 if full else torch.bfloat16
+        base_dir, dtype=torch.float32 if full else hw.compute_dtype()
     )
     if not full:
         from peft import LoraConfig, get_peft_model

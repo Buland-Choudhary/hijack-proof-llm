@@ -22,6 +22,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.chat import ChatEncoder, Prompt
 from hijack_proof.data import sft_data
 from hijack_proof.data import taskforge as tf
@@ -105,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"prompt pool: {len(items)} items {counts}", flush=True)
 
     torch.manual_seed(args.seed)
-    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=hw.compute_dtype())
     model = PeftModel.from_pretrained(model, args.adapter, is_trainable=True)
     ref_adapter = None
     if args.beta_kl > 0:

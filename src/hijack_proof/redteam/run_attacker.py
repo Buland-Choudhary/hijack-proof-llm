@@ -19,6 +19,7 @@ from pathlib import Path
 
 import torch
 
+from hijack_proof import hw
 from hijack_proof.chat import ChatEncoder, Prompt
 from hijack_proof.redteam import attacker as atk
 from hijack_proof.train import grpo, sft
@@ -30,7 +31,7 @@ def load_attacker(base_dir: Path, adapter: Path | None, lora_r: int, seed: int):
     from peft import LoraConfig, PeftModel, get_peft_model
     from transformers import AutoModelForCausalLM
 
-    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=hw.compute_dtype())
     if adapter is not None:
         return PeftModel.from_pretrained(model, adapter, is_trainable=True)
     torch.manual_seed(seed)
@@ -102,7 +103,7 @@ def cmd_sample(args) -> int:
     if model is None:
         from transformers import AutoModelForCausalLM
 
-        model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=hw.compute_dtype())
     model.eval()
     cfg = grpo.GRPOConfig(group_size=1, max_new_tokens=70, temperature=args.temperature)
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
