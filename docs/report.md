@@ -50,14 +50,24 @@ Compute: SFT of the 0.6B model took 12.5 minutes on 4 CPU cores (`results/sft/tr
 | SmolLM2-360M, untrained | 41.3% | 44.4% (41.2-47.8) | 39.0% | 29.6% |
 | SmolLM2-360M + SFT | 42.7% (38.2-47.1) | 29.4% (26.4-32.3) | 50.0% | 25.9% |
 | SmolLM2-360M + SFT + DPO | 42.7% (38.2-47.1) | 20.0% (17.3-22.6) | 54.0% | not run |
+| SmolLM2-360M + SFT + DPO + GRPO | 44.9% (40.2-49.6) | 15.1% (12.8-17.6) | 75.5% | not run |
 
 - Qwen3-0.6B: 3.9% attack success; on held-out styles 3.0% vs 4.3% on seen styles.
-- SmolLM2-360M learns only part of the defense; DPO helps there.
+- SmolLM2-360M learns only part of the defense; DPO helps there, and GRPO (section 5b) adds more.
 - **DPO did not help Qwen3-0.6B** (dev split): its SFT adapter was already at 1% attack success and two DPO
   variants (0-0.3%) cost 9-11 points of clean accuracy. See the DPO sections of [PROGRESS.md](../PROGRESS.md).
 - **Costs:** IFEval drops 7.6 points (Qwen) and 3.7 (360M). On the over-defense suite, Qwen SFT keeps 90.5%
   (untrained: 91.0%); DPO on the 360M model lowers it from 90.5% to 83.5%.
 - Input role vs inline placement (360M, dev): 13.7% vs 17.7% attack success, intervals overlap.
+
+### 5b. GRPO (SmolLM2-360M only)
+Reinforcement learning with rewards computed by code (answer correct, injection obeyed, format violation,
+user directive followed), written from scratch; 100 steps from the SFT+DPO adapter, recipe fixed on dev.
+Frozen test: attack success 20.0% -> 15.1%, accuracy under attack 35.7% -> 41.0%, trusted-directive
+compliance 54.0% -> 75.5%, over-defense 83.5% -> 84.5%, clean accuracy 42.7% -> 44.9% (intervals overlap
+for clean accuracy and over-defense). Qwen3-0.6B was not run (CPU cost, little signal; see
+[M5 note](notes/M5-grpo.md)); no KL or group-size ablation. IFEval was not re-run for the DPO/GRPO models,
+so their usefulness cost on instruction following is unmeasured.
 
 ## 6. Quantization
 Merged and converted to GGUF, re-evaluated on the same frozen test through llama.cpp: Q8_0 (639 MB) 3.7%
@@ -75,6 +85,7 @@ the intervals.
 - Qwen's "trusted directive" score on the final suite (73.0%) is well below its dev score (92.7%): the
   trusted-directive behavior generalizes to new phrasings less well than attack resistance does.
 - Only the Qwen SFT model was quantized and served; the 360M models were not.
+- GRPO was run once (one seed) on the 360M model only.
 
 ## 8. Reproduce
 Commands are in [`CLAUDE.md`](../CLAUDE.md) and the queue files in

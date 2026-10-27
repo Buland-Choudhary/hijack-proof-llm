@@ -312,3 +312,20 @@ different prompts). Reward-hacking audit (every 10 steps, `runs/grpo/grpo360-a/s
 field of metrics): no empty answers, no refusals on clean prompts, copying the document appeared once
 (1 of 32 samples at step 60; 7 of 32 at step 20) and unfinished answers 0-19%.
 Next: GRPO on Qwen3-0.6B from its SFT adapter; if time allows a KL ablation.
+
+## M5 final test: SmolLM2-360M SFT + DPO v2 + GRPO (frozen test, recipe fixed on dev beforehand)
+Files: `results/core|userfollow|overdefense/smollm2-360m__none__input_role__grpo360-a-final.json`
+(queue `scripts/queues/m5_final360.txt`; the core eval was reset twice and resumed from its saved rows).
+
+| Frozen test | SFT | + DPO | + GRPO |
+|---|---|---|---|
+| Attack success (loose) | 29.4% (26.4-32.3) | 20.0% (17.3-22.6) | 15.1% (12.8-17.6) |
+| Accuracy under attack | 31.6% | 35.7% (32.6-39.0) | 41.0% (37.8-44.3) |
+| Clean accuracy | 42.7% (38.2-47.1) | 42.7% | 44.9% (40.2-49.6) |
+| Trusted-directive compliance | 50.0% (43.5-57.0) | 54.0% (47.0-61.0) | 75.5% (69.5-81.5) |
+| Over-defense accuracy | 90.5% (86.0-94.5) | 83.5% (78.0-88.5) | 84.5% (79.5-89.5) |
+
+Qwen3-0.6B GRPO was started twice and stopped: after a machine restart the CPU was about 3-5x slower (rollouts
+100+ s per step) and the SFT adapter already scored near 1.0 on most groups (little signal). Not run: Qwen GRPO, KL
+and group-size ablations. IFEval not re-run for DPO/GRPO models. README, report and the M5 note
+(`docs/notes/M5-grpo.md`) updated. Next: M6 red teaming (attacker model trained with GRPO against the defender).

@@ -168,12 +168,17 @@ TRAINED = [  # (result file in results/core, label, trained?)
     ("smollm2-360m__none__user_inline.json", "SmolLM2-360M\nuntrained", False),
     ("smollm2-360m__none__input_role__sft360-uf-final.json", "SmolLM2-360M\n+ SFT", True),
     ("smollm2-360m__none__input_role__dpo360-v2-final.json", "SmolLM2-360M\n+ SFT + DPO", True),
+    (
+        "smollm2-360m__none__input_role__grpo360-a-final.json",
+        "SmolLM2-360M\n+ SFT + DPO + GRPO",
+        True,
+    ),
 ]
 
 
 def asr_trained(out: Path, core_dir: Path = Path("results/core")) -> None:
     """Attack success before and after training (final test), one bar per model setup."""
-    fig, ax = plt.subplots(figsize=(8.5, 4.4), dpi=200, facecolor=SURFACE)
+    fig, ax = plt.subplots(figsize=(8.5, 4.9), dpi=200, facecolor=SURFACE)
     _style(ax)
     for i, (name, label, trained) in enumerate(TRAINED):
         m = json.loads((core_dir / name).read_text())["summary"]["asr_loose"]

@@ -487,9 +487,9 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 ### Tier 2 (after `v1.0`)
 
 **M5: GRPO**
-- [ ] Rollout engine (+ llama.cpp speed comparison); reward functions with unit tests
-- [ ] GRPO trainer; sanity task shows learning
-- [ ] Runs on 360M then 0.6B; ablations; reward curves; reward-hacking audit; design note M5
+- [x] Rollout engine (HF sampling; no llama.cpp comparison, see M5 note); reward functions with unit tests
+- [x] GRPO trainer; sanity task shows learning
+- [x] Run on 360M (0.6B, KL and group-size ablations not run); reward audit; design note M5 (`docs/notes/M5-grpo.md`)
 
 **M6: Red-teaming loop**
 - [ ] Attacker environment and reward; attacker GRPO; resumable round orchestration

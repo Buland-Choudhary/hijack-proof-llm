@@ -1,0 +1,4 @@
+# Final test for SmolLM2-360M SFT + DPO v2 + GRPO (recipe fixed on dev beforehand).
+hp-eval --model smollm2-360m --adapter runs/grpo/grpo360-a/adapter --suite core --format input_role --tag grpo360-a-final
+hp-eval --model smollm2-360m --adapter runs/grpo/grpo360-a/adapter --suite userfollow --format input_role --tag grpo360-a-final
+hp-eval --model smollm2-360m --adapter runs/grpo/grpo360-a/adapter --suite overdefense --format input_role --tag grpo360-a-final
