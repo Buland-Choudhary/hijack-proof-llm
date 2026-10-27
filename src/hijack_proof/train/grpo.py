@@ -130,7 +130,7 @@ def build_batch(prompt: list[int], resp: list[int], pad_id: int, width: int):
 def train(
     model, items: list[dict], encode_prompt, decode, cfg: GRPOConfig, out_dir: Path,
     eos_id: int, pad_id: int, deadline: float | None = None, log=print,
-    ref_adapter: str | None = None,
+    ref_adapter: str | None = None, score_fn=None,
 ) -> str:  # fmt: skip
     """Run (or resume) GRPO on `items` (instruction, data, kind, answer, attack)."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -166,16 +166,22 @@ def train(
         )
         t_roll = time.time() - t_roll
 
-        flat_items, flat_text, flat_fin, scored = [], [], [], []
+        flat_items, flat_text, flat_fin = [], [], []
         for i, group in zip(chosen, rolls, strict=True):
-            scores = []
             for resp, fin in group:
-                text = decode(resp)
-                scores.append(rw.reward(items[i], text, fin))
                 flat_items.append(items[i])
-                flat_text.append(text)
+                flat_text.append(decode(resp))
                 flat_fin.append(fin)
-            scored.append(scores)
+        if score_fn is not None:  # batch scorer, e.g. one that also queries a defender model
+            flat_scores = score_fn(flat_items, flat_text, flat_fin)
+        else:
+            flat_scores = [
+                rw.reward(it, tx, fi)
+                for it, tx, fi in zip(flat_items, flat_text, flat_fin, strict=True)
+            ]
+        scored = [
+            flat_scores[g * cfg.group_size : (g + 1) * cfg.group_size] for g in range(len(chosen))
+        ]
         advs = group_advantages([[s["total"] for s in g] for g in scored])
 
         seqs = [  # (prompt, response, advantage) for responses that carry signal

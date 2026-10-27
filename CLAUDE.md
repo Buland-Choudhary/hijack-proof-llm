@@ -44,6 +44,9 @@
   - after any restart, run `uptime` and check `runs/` before assuming a job is still alive
   - never use `pkill -f` / `pgrep -f` with text that also appears in your own command (it matches
     and kills the shell running it); use `pgrep -x <name>` and kill by PID
+- **The cloud VM's CPU can change after a restart** (AMX bf16 earlier, plain AVX-512 later; torch got
+  3-5x slower and the native llama.cpp build crashed with `Illegal instruction`). After a restart check
+  `lscpu` and rebuild llama.cpp with `rm -rf third_party/llama.cpp/build && scripts/setup_llama_cpp.sh`.
 - Keep disk use in check: delete old checkpoints, keep the best and the last.
 
 ## Where things go

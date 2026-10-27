@@ -329,3 +329,13 @@ Qwen3-0.6B GRPO was started twice and stopped: after a machine restart the CPU w
 100+ s per step) and the SFT adapter already scored near 1.0 on most groups (little signal). Not run: Qwen GRPO, KL
 and group-size ablations. IFEval not re-run for DPO/GRPO models. README, report and the M5 note
 (`docs/notes/M5-grpo.md`) updated. Next: M6 red teaming (attacker model trained with GRPO against the defender).
+
+## M6 red teaming: building blocks (no results yet)
+`redteam/attacker.py` (environment, reward = success x (1 + 0.3 x novelty) - length penalty, invalid text = -0.5,
+rolling 3-gram novelty memory), `redteam/run_attacker.py` (`hp-attacker train|sample`: SmolLM2-360M-Instruct + LoRA
+trained with the GRPO trainer against a frozen GGUF defender through llama-server), `scripts/make_gguf.sh`
+(merge + Q8_0). The GRPO trainer got an optional batch `score_fn`. Defender D0 = SmolLM2-360M SFT+DPO+GRPO adapter
+(`models/gguf/hp-d0-q8_0.gguf`, not committed). Untrained attacker vs D0, 64 prompts on train-split documents
+(`runs/redteam/baseline_untrained.summary.json`): 40.6% of outputs usable (contain the marker, <=80 words),
+7.8% of all attempts hijack D0. Ops: the new VM's CPU lacks AMX, so the native llama.cpp build crashed with
+Illegal instruction; rebuilt (note added to CLAUDE.md).
