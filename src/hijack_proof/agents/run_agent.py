@@ -151,8 +151,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--model", required=True)
     s.add_argument("--run", required=True)
     s.add_argument("--n", type=int, default=600)
-    s.add_argument("--attack-share", type=float, default=0.5,
-                   help="share of training traces whose file holds an injection (0 = clean only)")  # fmt: skip
+    s.add_argument(
+        "--attack-share", type=float, default=0.5, help="share of traces with an injection"
+    )
     args = ap.parse_args(argv)
     return cmd_eval(args) if args.cmd == "eval" else cmd_sft(args)
 
