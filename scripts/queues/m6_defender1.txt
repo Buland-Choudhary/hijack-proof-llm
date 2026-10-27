@@ -1,0 +1,8 @@
+# M6 round 1, defender update: more attacks from attacker 1, DPO on them (+ replay), D1 -> GGUF, evaluate.
+hp-attacker sample --adapter runs/redteam/atk-r1/adapter --defender-gguf models/gguf/hp-d0-q8_0.gguf --n 512 --seed 12 --out runs/redteam/r1_vs_d0_b.jsonl
+.venv/bin/python scripts/redteam_pairs.py data/generated/redteam_r1_pairs.jsonl runs/redteam/r1_vs_d0.jsonl runs/redteam/r1_vs_d0_b.jsonl
+hp-dpo --model smollm2-360m --adapter runs/grpo/grpo360-a/adapter --sft-data data/generated/sft_smollm2-360m.jsonl --run dpo-d1 --beta 0.1 --lr 1e-5 --sft-weight 0.2 --n-directive 300 --replay-n 600 --extra-pairs data/generated/redteam_r1_pairs.jsonl --ckpt-minutes 3
+scripts/make_gguf.sh smollm2-360m runs/dpo/dpo-d1/adapter hp-d1
+hp-attacker sample --adapter runs/redteam/atk-r1/adapter --defender-gguf models/gguf/hp-d1-q8_0.gguf --n 256 --seed 11 --out runs/redteam/r1_vs_d1.jsonl
+hp-eval --model hp-d0 --gguf models/gguf/hp-d0-q8_0.gguf --suite core --format input_role --tag d0-gguf
+hp-eval --model hp-d1 --gguf models/gguf/hp-d1-q8_0.gguf --suite core --format input_role --tag d1-gguf

@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import random
 import sys
 import time
 from pathlib import Path
@@ -61,6 +62,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pairs-per-step", type=int, default=16)
     ap.add_argument("--micro-pairs", type=int, default=2)
     ap.add_argument("--n-directive", type=int, default=300)
+    ap.add_argument(
+        "--extra-pairs", type=Path, nargs="*", default=[], help="extra pair jsonl files"
+    )
+    ap.add_argument("--replay-n", type=int, help="keep only N of the standard pairs (replay)")
     ap.add_argument("--max-len", type=int, default=1024)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, help="use only the first N pairs (smoke tests)")
@@ -83,11 +88,18 @@ def main(argv: list[str] | None = None) -> int:
     base_dir = Path("models") / args.model
     tok = AutoTokenizer.from_pretrained(base_dir)
     enc = ChatEncoder(tok, fmt=args.format)
-    raw = dpo_data.build_pairs(args.sft_data, args.n_directive, args.seed, args.limit)
+    raw = dpo_data.build_pairs(
+        args.sft_data, args.n_directive, args.seed, args.replay_n or args.limit
+    )
+    for path in args.extra_pairs:
+        raw += [json.loads(line) for line in path.read_text().splitlines()]
+    if args.extra_pairs:
+        random.Random(f"dpo-mix/{args.seed}").shuffle(raw)
     pairs, dropped = encode_pairs(raw, enc, args.max_len)
     info = {
         "pairs": len(pairs), "dropped_too_long": dropped,
         "injection": sum(p["kind"] == "injection" for p in raw),
+        "extra": sum(str(p["id"]).startswith("redteam-") for p in raw),
         "directive": sum(p["kind"] == "directive" for p in raw),
         "sft_data_sha256": hashlib.sha256(args.sft_data.read_bytes()).hexdigest(),
     }  # fmt: skip

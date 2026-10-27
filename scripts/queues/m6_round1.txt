@@ -1,0 +1,4 @@
+# M6 round 1: train the attacker against defender D0 (SFT+DPO+GRPO 360M), then sample attacks from it.
+hp-attacker train --defender-gguf models/gguf/hp-d0-q8_0.gguf --run atk-r1 --steps 30
+hp-attacker sample --adapter runs/redteam/atk-r1/adapter --defender-gguf models/gguf/hp-d0-q8_0.gguf --n 256 --seed 11 --out runs/redteam/r1_vs_d0.jsonl
+hp-attacker sample --defender-gguf models/gguf/hp-d0-q8_0.gguf --n 128 --seed 11 --out runs/redteam/untrained_vs_d0.jsonl

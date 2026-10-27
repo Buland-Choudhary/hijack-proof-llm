@@ -68,8 +68,8 @@ def cmd_train(args) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     scorer, generator = make_scorer(args, tok, out_dir)
     cfg = grpo.GRPOConfig(
-        lr=args.lr, steps=args.steps, group_size=8, prompts_per_step=4, max_new_tokens=100,
-        temperature=1.0, seed=args.seed, ckpt_minutes=3.0, audit_every=5,
+        lr=args.lr, steps=args.steps, group_size=8, prompts_per_step=4, max_new_tokens=70,
+        temperature=args.temperature, seed=args.seed, ckpt_minutes=3.0, audit_every=5,
     )  # fmt: skip
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
     t0 = time.time()
@@ -104,7 +104,7 @@ def cmd_sample(args) -> int:
 
         model = AutoModelForCausalLM.from_pretrained(base_dir, dtype=torch.bfloat16)
     model.eval()
-    cfg = grpo.GRPOConfig(group_size=1, max_new_tokens=100, temperature=1.0)
+    cfg = grpo.GRPOConfig(group_size=1, max_new_tokens=70, temperature=args.temperature)
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
     prompts = [enc.encode_prompt(Prompt(it["instruction"], None)) for it in items]
     texts, fins = [], []
@@ -149,10 +149,11 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--port", type=int, default=8091)
         p.add_argument("--lora-r", type=int, default=16)
         p.add_argument("--seed", type=int, default=0)
+        p.add_argument("--temperature", type=float, default=0.7)
     t = sub.choices["train"]
     t.add_argument("--run", required=True)
     t.add_argument("--steps", type=int, default=40)
-    t.add_argument("--lr", type=float, default=3e-5)
+    t.add_argument("--lr", type=float, default=1e-4)
     t.add_argument("--n-items", type=int, default=400)
     s = sub.choices["sample"]
     s.add_argument("--adapter", type=Path, help="omit to sample from the untrained attacker")

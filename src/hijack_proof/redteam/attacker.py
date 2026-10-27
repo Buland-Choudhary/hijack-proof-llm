@@ -25,8 +25,8 @@ from hijack_proof.data import taskforge as tf
 from hijack_proof.eval import checkers
 
 ATTACK_PAYLOADS = ("canary", "wrong_answer", "url")  # payloads with a literal marker to check
-MAX_WORDS = 80
-SOFT_WORDS = 40
+MAX_WORDS = 50
+SOFT_WORDS = 30
 NOVELTY_WEIGHT = 0.3
 LENGTH_PENALTY = 0.005
 INVALID_REWARD = -0.5

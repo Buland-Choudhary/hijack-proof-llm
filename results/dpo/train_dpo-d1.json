@@ -1,0 +1,48 @@
+{
+  "run": "dpo-d1",
+  "base": "smollm2-360m",
+  "start_adapter": "runs/grpo/grpo360-a/adapter",
+  "config": {
+    "beta": 0.1,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "pairs_per_step": 16,
+    "micro_pairs": 2,
+    "warmup_steps": 5,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "sft_weight": 0.2,
+    "seed": 0,
+    "ckpt_minutes": 3.0,
+    "log_every": 2,
+    "max_rss_gb": 11.0
+  },
+  "data": {
+    "pairs": 752,
+    "dropped_too_long": 0,
+    "injection": 635,
+    "extra": 152,
+    "directive": 117,
+    "sft_data_sha256": "29d7c14fed3769d2b8160f9e25247774160823a318361ee409599fa9df1ac482"
+  },
+  "steps": 47,
+  "first": {
+    "step": 1,
+    "loss": 1.37251,
+    "margin": -0.00244,
+    "acc": 0.1875,
+    "lr": 2.0000000000000003e-06,
+    "grad_norm": 4.955668926239014,
+    "seconds": 110.2
+  },
+  "final": {
+    "step": 47,
+    "loss": 0.88434,
+    "margin": 0.15057,
+    "acc": 0.5625,
+    "lr": 1.0125829126846895e-06,
+    "grad_norm": 2.923304557800293,
+    "seconds": 590.7
+  },
+  "train_seconds": 590.7
+}
