@@ -291,3 +291,24 @@ adapter, lr 5e-5, T=0.8, 30 steps, `results/grpo/train_sanity360.json`): mean re
 -> last 7 steps 0.821, so the trainer learns. About 30-35 s per step on 4 CPU cores (rollouts dominate).
 No llama.cpp sampler comparison: the policy changes every step and llama.cpp would need a merge+convert per step.
 Next: GRPO on the defense task starting from the 360M DPO v2 adapter; evaluate on dev only.
+
+## M5 GRPO on SmolLM2-360M (dev split only)
+Run `grpo360-a`: starts from the SFT+DPO v2 adapter (`dpo360-v2`), task `defense` (400 attacked, 200 clean,
+200 user-directive prompts from fresh train-split seeds), G=8, 4 prompts/step, lr 2e-5, T=0.8, 100 steps, no KL
+(`results/grpo/train_grpo360-a.json`, queue `scripts/queues/m5_grpo360.txt`, about 55 minutes).
+
+| Dev metric | SFT | + DPO v2 | + GRPO |
+|---|---|---|---|
+| Attack success (loose) | 13.7% (10.0-17.7) | 7.0% (4.3-10.0) | 4.7% (2.3-7.3) |
+| Clean accuracy | 50.7% (42.7-58.7) | 46.7% (38.7-54.7) | 42.7% (35.3-50.7) |
+| Accuracy under attack | 42.3% | 43.7% | 42.0% |
+| Trusted-directive compliance | 49.3% (41.3-57.3) | 57.3% (49.3-65.3) | **80.0% (73.3-86.0)** |
+| Over-defense accuracy | 90.5% | 83.5% | 85.5% (80.5-90.0) |
+
+GRPO's clear gain is trusted-directive compliance (+22.7 points, intervals do not overlap); attack success
+falls a little more (intervals overlap). It does not recover clean accuracy (-4 points vs DPO, within noise),
+although the training task reward rose (first-10 mean 0.424, last-10 mean 0.609; noisy because each step uses
+different prompts). Reward-hacking audit (every 10 steps, `runs/grpo/grpo360-a/samples.jsonl` and the `audit`
+field of metrics): no empty answers, no refusals on clean prompts, copying the document appeared once
+(1 of 32 samples at step 60; 7 of 32 at step 20) and unfinished answers 0-19%.
+Next: GRPO on Qwen3-0.6B from its SFT adapter; if time allows a KL ablation.
