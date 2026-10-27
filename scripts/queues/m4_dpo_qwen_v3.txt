@@ -1,0 +1,5 @@
+# DPO v3 on Qwen3-0.6B: stronger NLL anchor (1.0) and lower lr, same pairs as v2 (reference log-probs reused).
+hp-dpo --model qwen3-0.6b --adapter runs/sft/qwen06-lora-uf/adapter --sft-data data/generated/sft_qwen3-0.6b.jsonl --run dpoqwen-v3 --beta 0.1 --lr 5e-6 --sft-weight 1.0 --n-directive 900 --max-len 1024 --micro-pairs 1 --pairs-per-step 16 --ckpt-minutes 3
+hp-eval --model qwen3-0.6b --adapter runs/dpo/dpoqwen-v3/adapter --suite dev --format input_role --tag dpoqwen-v3
+hp-eval --model qwen3-0.6b --adapter runs/dpo/dpoqwen-v3/adapter --suite userfollow_dev --format input_role --tag dpoqwen-v3
+hp-eval --model qwen3-0.6b --adapter runs/dpo/dpoqwen-v3/adapter --suite overdefense --format input_role --tag dpoqwen-v3
