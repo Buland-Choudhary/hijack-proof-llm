@@ -1,0 +1,3 @@
+# M6: clean comparison on attacks never used for training (seed 13): attacker 1 vs D0 and vs D1.
+hp-attacker sample --adapter runs/redteam/atk-r1/adapter --defender-gguf models/gguf/hp-d0-q8_0.gguf --n 256 --seed 13 --out runs/redteam/r1_vs_d0_fresh.jsonl
+hp-attacker sample --adapter runs/redteam/atk-r1/adapter --defender-gguf models/gguf/hp-d1-q8_0.gguf --n 256 --seed 13 --out runs/redteam/r1_vs_d1_fresh.jsonl
