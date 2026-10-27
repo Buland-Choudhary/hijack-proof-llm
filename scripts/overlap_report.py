@@ -7,7 +7,8 @@ training text (SFT rows and the DPO/userfollow rows built from the same generato
 shared by all TaskForge templates is expected; the report also gives the share of eval items that
 share a *long* run (>= 50% of 8-grams), which would indicate leaked documents.
 
-    python scripts/overlap_report.py --train data/generated/sft_qwen3-0.6b.jsonl data/generated/sft_userfollow.jsonl
+    python scripts/overlap_report.py \
+        --train data/generated/sft_qwen3-0.6b.jsonl data/generated/sft_userfollow.jsonl
 """
 
 from __future__ import annotations
