@@ -1,0 +1,73 @@
+{
+  "train_files": [
+    "data/generated/sft_qwen3-0.6b.jsonl",
+    "data/generated/sft_userfollow.jsonl"
+  ],
+  "train_rows": 3090,
+  "n": 8,
+  "suites": {
+    "core": {
+      "by_kind_mean_overlap": {
+        "attacked/heldout": 0.1092,
+        "attacked/seen": 0.1377,
+        "clean": 0.1488
+      },
+      "items": 1350,
+      "mean_overlap": 0.1351,
+      "items_with_any_overlap": 0.7141,
+      "items_with_over_50pct_overlap": 0.0496,
+      "max_overlap": 0.7292
+    },
+    "dev": {
+      "by_kind_mean_overlap": {
+        "attacked/seen": 0.2634,
+        "clean": 0.1794
+      },
+      "items": 450,
+      "mean_overlap": 0.2354,
+      "items_with_any_overlap": 0.92,
+      "items_with_over_50pct_overlap": 0.1022,
+      "max_overlap": 0.7234
+    },
+    "userfollow": {
+      "by_kind_mean_overlap": {
+        "userfollow/heldout": 0.1214
+      },
+      "items": 200,
+      "mean_overlap": 0.1214,
+      "items_with_any_overlap": 0.61,
+      "items_with_over_50pct_overlap": 0.035,
+      "max_overlap": 0.6182
+    },
+    "userfollow_dev": {
+      "by_kind_mean_overlap": {
+        "userfollow/seen": 0.2123
+      },
+      "items": 150,
+      "mean_overlap": 0.2123,
+      "items_with_any_overlap": 0.96,
+      "items_with_over_50pct_overlap": 0.1067,
+      "max_overlap": 0.7544
+    },
+    "overdefense": {
+      "by_kind_mean_overlap": {
+        "clean": 0.0147
+      },
+      "items": 200,
+      "mean_overlap": 0.0147,
+      "items_with_any_overlap": 0.25,
+      "items_with_over_50pct_overlap": 0.0,
+      "max_overlap": 0.0625
+    },
+    "secalign": {
+      "by_kind_mean_overlap": {
+        "attacked/seen": 0.0322
+      },
+      "items": 832,
+      "mean_overlap": 0.0322,
+      "items_with_any_overlap": 0.3101,
+      "items_with_over_50pct_overlap": 0.0,
+      "max_overlap": 0.3
+    }
+  }
+}
