@@ -29,6 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 track = ["mlflow>=3.0"]
 dev = ["pytest>=8.3", "ruff>=0.12"]
+demo = ["gradio>=5"]
 
 [project.scripts]
 hp-fetch = "hijack_proof.models.fetch:main"
@@ -41,6 +42,7 @@ hp-sft = "hijack_proof.train.run_sft:main"
 hp-dpo = "hijack_proof.train.run_dpo:main"
 hp-merge = "hijack_proof.train.merge:main"
 hp-serve = "hijack_proof.serve.server:main"
+hp-demo = "hijack_proof.serve.demo:main"
 hp-charts = "hijack_proof.eval.charts:main"
 
 [tool.hatch.build.targets.wheel]

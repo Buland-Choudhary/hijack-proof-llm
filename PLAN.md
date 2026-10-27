@@ -473,8 +473,8 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [ ] Pair builder; runs; β and pipeline ablations; results; design note M4
 
 **M8: Ship**
-- [ ] Merge → GGUF → Q8_0/Q4_K_M; evaluation after quantization
-- [ ] Server with secure format; Gradio demo; Dockerfile; demo GIF
+- [x] Merge → GGUF → Q8_0/Q4_K_M; evaluation after quantization (Qwen3-0.6B SFT; 360M models not quantized)
+- [x] Server with secure format; Gradio demo; Dockerfile (untested build); demo GIF TBD
 
 *Done when:* `docker run` gives a working demo.
 

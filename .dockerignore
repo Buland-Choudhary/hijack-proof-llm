@@ -1,0 +1,8 @@
+models/
+data/
+runs/
+mlruns/
+third_party/
+.venv/
+.git/
+**/__pycache__/
