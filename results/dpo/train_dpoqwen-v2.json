@@ -1,0 +1,47 @@
+{
+  "run": "dpoqwen-v2",
+  "base": "qwen3-0.6b",
+  "start_adapter": "runs/sft/qwen06-lora-uf/adapter",
+  "config": {
+    "beta": 0.1,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "pairs_per_step": 16,
+    "micro_pairs": 1,
+    "warmup_steps": 5,
+    "min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "sft_weight": 0.2,
+    "seed": 0,
+    "ckpt_minutes": 3.0,
+    "log_every": 2,
+    "max_rss_gb": 11.0
+  },
+  "data": {
+    "pairs": 2367,
+    "dropped_too_long": 0,
+    "injection": 1467,
+    "directive": 900,
+    "sft_data_sha256": "e57ec4ba5ffd18d8480314675414436a112f4823b1b42cb0e2777364d3575bc8"
+  },
+  "steps": 148,
+  "first": {
+    "step": 1,
+    "loss": 0.80777,
+    "margin": 0.0,
+    "acc": 0.0,
+    "lr": 2.0000000000000003e-06,
+    "grad_norm": 5.995031356811523,
+    "seconds": 32.4
+  },
+  "final": {
+    "step": 148,
+    "loss": 0.13344,
+    "margin": 4.54055,
+    "acc": 1.0,
+    "lr": 1.0010859072207938e-06,
+    "grad_norm": 2.0019547939300537,
+    "seconds": 119.1
+  },
+  "train_seconds": 119.1
+}

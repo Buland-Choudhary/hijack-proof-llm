@@ -220,3 +220,20 @@ v2 halves attack success relative to SFT and raises directive compliance, but co
 accuracy (the D16 gate allows 3, though the intervals overlap) and 7 points on over-defense. DPO v1 is
 the stronger attack defense but breaks the hierarchy. Neither is tuned on core. Next: run the v2 recipe on
 Qwen3-0.6B, then pick one 360M recipe on dev before any frozen-test run.
+
+## M4 DPO on Qwen3-0.6B, v2 recipe (dev split only)
+Run `dpoqwen-v2` (same recipe as `dpo360-v2`; `results/dpo/train_dpoqwen-v2.json`).
+
+| Dev metric | SFT (`qwen06-lora-uf`) | + DPO v2 |
+|---|---|---|
+| Attack success (loose) | 1.0% (0.0-2.0) | 0.0% (0.0-0.0) |
+| Clean accuracy | 66.0% (58.7-73.3) | 55.3% (47.3-62.7) |
+| Accuracy under attack | 63.3% (57.7-68.7) | 53.3% (47.7-58.7) |
+| Trusted-directive compliance | 92.7% (88.0-96.7) | 99.3% (98.0-100) |
+| Over-defense accuracy | 90.5% (86.5-94.0) | 82.0% (76.5-87.0) |
+
+Qwen's SFT adapter is already near 1% attack success on dev, so DPO has almost nothing left to remove and
+costs 10.7 points of clean accuracy and 8.5 on over-defense. This recipe is rejected for Qwen: SFT stays the
+Qwen candidate. Both clean and under-attack accuracy fall, which looks like likelihood displacement (DPO lowers
+the likelihood of both responses). Next: a gentler variant with a stronger NLL term (weight 1.0, lr 5e-6),
+re-using the cached reference log-probs.
