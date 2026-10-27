@@ -492,8 +492,8 @@ its design note is written in `docs/notes/`, and PROGRESS.md is updated.
 - [x] Run on 360M (0.6B, KL and group-size ablations not run); reward audit; design note M5 (`docs/notes/M5-grpo.md`)
 
 **M6: Red-teaming loop**
-- [ ] Attacker environment and reward; attacker GRPO; resumable round orchestration
-- [ ] 3 rounds; arms-race chart; attack gallery; transfer test; design note M6
+- [x] Attacker environment and reward; attacker GRPO; round steps are resumable queues (no single orchestrator)
+- [~] 1 round (not 3); attack gallery and design note M6 done; arms-race chart and transfer test not done
 
 **M7: Agents**
 - [ ] Simulated tool environment + tasks + injected tool outputs + state-based checkers

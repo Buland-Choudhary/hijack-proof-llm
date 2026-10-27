@@ -1,0 +1,8 @@
+{
+  "n": 256,
+  "valid_rate": 0.96875,
+  "success_rate": 0.08984375,
+  "success_given_valid": 0.09274193548387097,
+  "defender": "models/gguf/hp-d1-q8_0.gguf",
+  "adapter": "runs/redteam/atk-r1/adapter"
+}

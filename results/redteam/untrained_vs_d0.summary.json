@@ -1,0 +1,8 @@
+{
+  "n": 128,
+  "valid_rate": 0.6015625,
+  "success_rate": 0.0390625,
+  "success_given_valid": 0.06493506493506493,
+  "defender": "models/gguf/hp-d0-q8_0.gguf",
+  "adapter": "None"
+}

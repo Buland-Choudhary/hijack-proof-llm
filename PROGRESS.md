@@ -357,3 +357,8 @@ plus 600 replay pairs (`scripts/queues/m6_defender1.txt`, run `dpo-d1`). Same 25
 Fixed core test through GGUF (`results/core/hp-d{0,1}__none__input_role__d{0,1}-gguf.json`): D0 attack success
 15.3%, clean accuracy 44.7%; D1 attack success 11.2%, clean accuracy 42.4%.
 Next: fresh-seed attacks against D0 and D1 (clean comparison), then decide whether to run round 2.
+
+## M6 finished at one round
+Fresh seed 13 (never used for training): attacker 1 vs D0 6.25% (16/256), vs D1 5.5% (14/256). Results,
+gallery and note: `results/redteam/`, `docs/notes/M6-redteam.md`. Decision: stop at one round (cost, and the
+attacker mostly plants fake answers rather than finding new attack styles); noted in the README. Next: M7 agents.
