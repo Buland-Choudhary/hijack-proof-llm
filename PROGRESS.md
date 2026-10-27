@@ -237,3 +237,19 @@ costs 10.7 points of clean accuracy and 8.5 on over-defense. This recipe is reje
 Qwen candidate. Both clean and under-attack accuracy fall, which looks like likelihood displacement (DPO lowers
 the likelihood of both responses). Next: a gentler variant with a stronger NLL term (weight 1.0, lr 5e-6),
 re-using the cached reference log-probs.
+
+## M4 DPO on Qwen3-0.6B, v3 (stronger NLL anchor, lr 5e-6; dev split only)
+Run `dpoqwen-v3` (`results/dpo/train_dpoqwen-v3.json`).
+
+| Dev metric | SFT | DPO v2 | DPO v3 |
+|---|---|---|---|
+| Attack success (loose) | 1.0% | 0.0% | 0.3% (0.0-1.0) |
+| Clean accuracy | 66.0% (58.7-73.3) | 55.3% | 56.7% (48.7-64.0) |
+| Trusted-directive compliance | 92.7% | 99.3% | 98.7% (96.7-100) |
+| Over-defense accuracy | 90.5% | 82.0% | 80.5% (74.5-85.5) |
+
+The stronger NLL anchor and lower lr did not recover the lost accuracy. DPO as built here does not improve
+Qwen3-0.6B: attack success is already ~1% after SFT and DPO trades 9-10 points of clean accuracy for it.
+Decision: Qwen ships the SFT adapter; DPO is reported as a negative result on Qwen. Stopping DPO tuning
+there (credits). For SmolLM2-360M, where SFT leaves 13.7% attack success on dev, DPO v2 is run once on the
+frozen test as the "SFT + DPO" row, reported alongside SFT whatever the outcome.
