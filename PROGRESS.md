@@ -281,3 +281,13 @@ cards. Open items (not blockers): demo GIF, Dockerfile build test, 360M quantiza
 ablation, mix-ratio ablation. CI lesson: run `ruff check .` on the whole repo (not just src/tests) before pushing
 - five consecutive CI runs failed on one long docstring line in `scripts/overlap_report.py`, fixed in the next commit.
 Next (Tier 2, in plan order): M5 GRPO, M6 red teaming, M7 agents.
+
+## M5 GRPO: trainer built, sanity task passes
+`train/rewards.py` (verifiable rewards: task score - 1.0 injection obeyed - 0.2 format violation; directive
+prompts reward obeying; unit-tested), `train/grpo.py` (group-relative advantages without std normalization,
+skip all-equal groups, clipped token-level loss, optional k3 KL to a frozen reference adapter, exact resume),
+`train/run_grpo.py` (`hp-grpo`). 18 new tests. Sanity task (reward 1 for answers of at most 3 words, 360M SFT
+adapter, lr 5e-5, T=0.8, 30 steps, `results/grpo/train_sanity360.json`): mean reward over the first 7 steps 0.278
+-> last 7 steps 0.821, so the trainer learns. About 30-35 s per step on 4 CPU cores (rollouts dominate).
+No llama.cpp sampler comparison: the policy changes every step and llama.cpp would need a merge+convert per step.
+Next: GRPO on the defense task starting from the 360M DPO v2 adapter; evaluate on dev only.

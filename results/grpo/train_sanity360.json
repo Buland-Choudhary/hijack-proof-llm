@@ -1,0 +1,39 @@
+{
+  "run": "sanity360",
+  "task": "sanity",
+  "base": "smollm2-360m",
+  "start_adapter": "runs/sft/sft360-lora-uf/adapter",
+  "config": {
+    "lr": 5e-05,
+    "steps": 30,
+    "group_size": 8,
+    "prompts_per_step": 4,
+    "max_new_tokens": 96,
+    "temperature": 0.8,
+    "clip_eps": 0.2,
+    "beta_kl": 0.0,
+    "updates_per_rollout": 1,
+    "micro_batch": 4,
+    "warmup_steps": 3,
+    "grad_clip": 1.0,
+    "seed": 0,
+    "ckpt_minutes": 3.0,
+    "audit_every": 10,
+    "max_rss_gb": 11.0
+  },
+  "steps": 30,
+  "seconds": 965.2,
+  "window": 7,
+  "first": {
+    "reward": 0.27767857142857144,
+    "task": 0.2857142857142857,
+    "obeyed": 0.0,
+    "format_violation": 0.04017857142857143
+  },
+  "last": {
+    "reward": 0.8214285714285714,
+    "task": 0.8214285714285714,
+    "obeyed": 0.0,
+    "format_violation": 0.0
+  }
+}
