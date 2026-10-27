@@ -1,0 +1,3 @@
+# M8: re-evaluate the quantized Qwen3-0.6B SFT model (merged LoRA -> GGUF) on the frozen core suite.
+hp-eval --model hp-qwen06-sft --gguf models/gguf/hp-qwen06-sft-q8_0.gguf --suite core --format input_role --tag q8_0
+hp-eval --model hp-qwen06-sft --gguf models/gguf/hp-qwen06-sft-q4_k_m.gguf --suite core --format input_role --tag q4_k_m
