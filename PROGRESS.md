@@ -370,3 +370,12 @@ hijacked 65.6% (55.6-74.4) on held-out attacks; trained with injected files 0.0%
 use the tools. Ops: this CPU has no fast bf16, so `hw.py` now falls back to fp32 (4x faster matmuls here); the agent SFT used fp32.
 Earlier results used bf16 on an AMX CPU; numeric differences are small but the two regimes are not bit-identical.
 Next: final README/report pass for Tier 2, update the report with GRPO/M6/M7 sections, refresh model card.
+
+## Final docs pass (2026-10-28)
+README rewritten as a complete final version: headline results, what was built, all result sections
+(baselines, SFT/DPO/GRPO, quantization, red teaming, agents), limitations, quick start with working
+commands, repository layout. Fixed a stale claim ("16 attack families"; it is 11 families + multi-injection).
+CLAUDE.md command list updated. `scripts/build_userfollow.py` now skips already-frozen suites so it can
+regenerate `data/generated/sft_userfollow.jsonl` on a fresh clone (the regenerated rows carry an extra
+`plain_answer` field, so the file hash differs from the one recorded for the trained adapters; the
+training fields are identical). The `v1.0` tag still exists only locally: the cloud proxy refuses tag pushes.

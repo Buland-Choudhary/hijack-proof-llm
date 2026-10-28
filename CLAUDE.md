@@ -66,10 +66,17 @@
 - Commit and push.
 
 ## Commands
-- setup: `python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"` then `scripts/install_hooks.sh`
+- setup: `python3 -m venv .venv && .venv/bin/pip install -e ".[dev,demo]"` then `scripts/install_hooks.sh`
 - test / lint: `.venv/bin/pytest` and `.venv/bin/ruff check . && .venv/bin/ruff format .`
 - fetch models: `.venv/bin/hp-fetch smollm2-360m qwen3-0.6b` (`--list` shows all)
-- llama.cpp: `scripts/setup_llama_cpp.sh`, `scripts/to_gguf.sh models/<name> q8_0`
-- eval: `.venv/bin/hp-eval --model <name> --suite dev|core --defense none|sandwich|...`
-  (add `--gguf <file>` to use llama.cpp)
-- more commands are added here as they are built (job queue, training, serving).
+- llama.cpp: `scripts/setup_llama_cpp.sh`, `scripts/to_gguf.sh models/<name> q8_0`,
+  merge an adapter and quantize: `scripts/make_gguf.sh <base> <adapter dir> <name>`
+- eval: `.venv/bin/hp-eval --model <name> [--adapter <dir>] --suite dev|core|userfollow|overdefense
+  --format input_role|user_inline --defense none|sandwich|...` (add `--gguf <file>` for llama.cpp);
+  `hp-ifeval`, `hp-report`, `hp-charts`
+- data: `hp-sftdata --model <name>`, `scripts/build_userfollow.py` (needs `data/raw/alpaca_data_cleaned.json`,
+  download command in the README)
+- training: `hp-sft`, `hp-dpo`, `hp-grpo`, `hp-attacker train|sample`, `hp-agent sft|eval`, `hp-merge`
+- serving: `hp-serve --model <tokenizer folder> --gguf <file>`, `hp-demo --endpoint <url>`
+- long runs: put one command per line in `scripts/queues/<name>.txt` and run
+  `scripts/run_queue_until_done.sh scripts/queues/<name>.txt` (resumes after interruptions)

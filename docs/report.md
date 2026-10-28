@@ -19,7 +19,7 @@ on an `example.com` host, a refusal, or a reply in French. The attacker can only
 - **Frozen sets** in [`evalsets/v2/`](../evalsets/v2/MANIFEST.json) with sha256 manifests: `core` (the final
   test, 1,350 items = 450 held-out-template documents, each clean and with 2 attacks), `dev` (tuning only),
   `userfollow` (does the model still obey the *user*), `overdefense` (ordinary documents containing
-  instruction-like text), plus a SecAlign-style Alpaca suite. IFEval is run with the vendored official checkers.
+  instruction-like text), plus a SecAlign-style Alpaca suite (frozen, not evaluated). IFEval is run with the vendored official checkers.
 - A train/eval 8-gram overlap check found no copied documents ([note](notes/M3-training-data-overlap.md)).
 
 ## 3. Baselines (no training)

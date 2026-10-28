@@ -4,6 +4,8 @@
 userfollow_dev : dev-split documents, train phrasings (for tuning)
 userfollow     : held-out documents, eval phrasings (final test)
 data/generated/sft_userfollow.jsonl : training rows with deterministic compliant targets
+
+Safe to re-run on a fresh clone: frozen suites are skipped, the training rows are rewritten.
 """
 
 import json
@@ -14,10 +16,14 @@ from hijack_proof.eval import suites
 
 if __name__ == "__main__":
     out = Path("evalsets") / suites.EVAL_VERSION
+    frozen = json.loads((out / "MANIFEST.json").read_text())["suites"]
     for name, split, n, seed, phrases in (
         ("userfollow_dev", "dev", 150, 6006, "train"),
         ("userfollow", "heldout", 200, 5005, "eval"),
     ):
+        if name in frozen:  # already frozen: never rewrite an eval set
+            print(name, "already frozen, skipped")
+            continue
         items = uf.build_userfollow_suite(split, n, seed, phrases)
         info = suites.add_suite(
             out, name, items, {"split": split, "n": n, "seed": seed, "phrases": phrases}
